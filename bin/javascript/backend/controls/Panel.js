@@ -9,6 +9,7 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
     const lg = 'quiqqer/mail-journal';
 
     return new Class({
+
         Extends: QUIPanel,
         Type: 'package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel',
 
@@ -16,13 +17,8 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
             '$onCreate',
             '$onInject',
             '$onResize',
-            '$refresh'
+            '$gridRefresh'
         ],
-
-        options: {
-            title: QUILocale.get(lg, 'panel.title'),
-            icon: 'fa fa-envelope'
-        },
 
         initialize: function (options) {
             this.setAttributes({
@@ -87,17 +83,17 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
                 sortOn: 'send_date',
                 sortBy: 'DESC',
                 perPage: 20,
-                onrefresh: this.$refresh
+                onrefresh: this.$gridRefresh
             });
 
-            this.$refresh();
+            this.$gridRefresh();
         },
 
         $onInject: function () {
-            this.$refresh();
+            this.$gridRefresh();
         },
 
-        $refresh: function () {
+        $gridRefresh: function () {
             const grid = this.$Grid;
 
             if (!grid) {
