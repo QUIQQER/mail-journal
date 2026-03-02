@@ -66,7 +66,7 @@ class OutboxSearch
 
         if (!empty($query['limit'])) {
             $limit = explode(',', $query['limit']);
-            $start = (int)($limit[0] ?? 0);
+            $start = (int)$limit[0];
             $max = (int)($limit[1] ?? 20);
             $limitSql = ' LIMIT ' . $start . ', ' . $max;
         }
