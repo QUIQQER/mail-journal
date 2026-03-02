@@ -4,5 +4,4 @@ namespace QUI\MailJournal;
 
 class EventHandler
 {
-
 }
