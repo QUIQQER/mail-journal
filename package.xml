@@ -1,0 +1,26 @@
+<quiqqer>
+    <package>
+        <title>
+            <locale group="quiqqer/mail-journal" var="package.title"/>
+        </title>
+        <description>
+            <locale group="quiqqer/mail-journal" var="package.description"/>
+        </description>
+
+        <support>
+            <email><![CDATA[support@pcsg.de]]></email>
+            <source><![CDATA[https://dev.quiqqer.com/quiqqer/mail-journal]]></source>
+            <issues><![CDATA[https://dev.quiqqer.com/quiqqer/mail-journal/issues]]></issues>
+        </support>
+
+        <copyright>
+            <name><![CDATA[PCSG - Computer & Internet Service OHG]]></name>
+            <license><![CDATA[GPL-3.0+]]></license>
+        </copyright>
+
+        <languages>
+            <language>de</language>
+            <language>en</language>
+        </languages>
+    </package>
+</quiqqer>

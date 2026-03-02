@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<locales>
+    <groups name="quiqqer/mail-journal" datatype="php,js">
+        <locale name="package.title">
+            <de><![CDATA[E-Mail Postausgang]]></de>
+            <en><![CDATA[E-Mail Outbox]]></en>
+        </locale>
+
+        <locale name="package.description">
+            <de><![CDATA[Speichert alle vom System versendeten E-Mails in einem durchsuchbaren Postausgang inklusive Anhängen, Archivierung und Ereignisbezug.]]></de>
+            <en><![CDATA[Stores all system-sent emails in a searchable outbox including attachments, archiving, and event linkage.]]></en>
+        </locale>
+    </groups>
+</locales>

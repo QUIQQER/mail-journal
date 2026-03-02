@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database>
+    <global>
+        <table name="mail_journal_outbox">
+            <field type="VARCHAR(50) NOT NULL PRIMARY KEY">id</field>
+            <field type="DATETIME NOT NULL">create_date</field>
+            <field type="DATETIME NULL DEFAULT NULL">send_date</field>
+
+            <field type="VARCHAR(1000) NULL DEFAULT NULL">subject</field>
+            <field type="LONGTEXT NULL">body_html</field>
+            <field type="LONGTEXT NULL">body_text</field>
+
+            <field type="VARCHAR(255) NULL DEFAULT NULL">mail_from</field>
+            <field type="VARCHAR(255) NULL DEFAULT NULL">mail_from_name</field>
+            <field type="TEXT NULL">mail_to</field>
+            <field type="TEXT NULL">reply_to</field>
+            <field type="TEXT NULL">mail_cc</field>
+            <field type="TEXT NULL">mail_bcc</field>
+            <field type="TINYINT(1) NOT NULL DEFAULT 1">is_html</field>
+
+            <field type="VARCHAR(255) NULL DEFAULT NULL">source_event</field>
+            <field type="JSON NULL DEFAULT NULL">meta</field>
+
+            <field type="TINYINT(1) NOT NULL DEFAULT 0">archived</field>
+            <field type="DATETIME NULL DEFAULT NULL">archive_date</field>
+
+            <index>create_date</index>
+            <index>archived</index>
+        </table>
+
+        <table name="mail_journal_outbox_attachments">
+            <field type="VARCHAR(50) NOT NULL PRIMARY KEY">id</field>
+            <field type="VARCHAR(50) NOT NULL">mail_id</field>
+            <field type="DATETIME NOT NULL">create_date</field>
+
+            <field type="VARCHAR(255) NOT NULL">filename</field>
+            <field type="VARCHAR(255) NULL DEFAULT NULL">mime_type</field>
+            <field type="BIGINT(20) NULL DEFAULT NULL">filesize</field>
+            <field type="VARCHAR(1000) NULL DEFAULT NULL">path</field>
+
+            <index>mail_id</index>
+            <index>create_date</index>
+        </table>
+    </global>
+</database>
