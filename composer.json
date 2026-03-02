@@ -1,0 +1,20 @@
+{
+  "name": "quiqqer/login-logger",
+  "type": "quiqqer-module",
+  "description": "Module for storing and managing all system-sent emails with search, event links, attachments, archiving, and permission control",
+  "license": "GPL-3.0+",
+  "authors": [],
+  "support": {
+    "email": "support@pcsg.de",
+    "url": "https://www.pcsg.de"
+  },
+  "require": {
+    "php": "^8",
+    "quiqqer\/core": "^2"
+  },
+  "autoload": {
+    "psr-4": {
+      "QUI\\MailJournal\\": "src/QUI/MailJournal"
+    }
+  }
+}
