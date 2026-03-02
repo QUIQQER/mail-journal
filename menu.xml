@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menu>
+    <item parent="/extras/"
+          name="mail-journal"
+          icon="fa fa-envelope"
+          require="package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel"
+    >
+        <locale group="quiqqer/mail-journal" var="menu.title"/>
+    </item>
+</menu>

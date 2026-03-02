@@ -10,5 +10,45 @@
             <de><![CDATA[Speichert alle vom System versendeten E-Mails in einem durchsuchbaren Postausgang inklusive Anhängen, Archivierung und Ereignisbezug.]]></de>
             <en><![CDATA[Stores all system-sent emails in a searchable outbox including attachments, archiving, and event linkage.]]></en>
         </locale>
+
+        <locale name="menu.title">
+            <de><![CDATA[E-Mail Postausgang]]></de>
+            <en><![CDATA[E-Mail Outbox]]></en>
+        </locale>
+
+        <locale name="panel.title">
+            <de><![CDATA[E-Mail Postausgang]]></de>
+            <en><![CDATA[E-Mail Outbox]]></en>
+        </locale>
+
+        <locale name="grid.header.send_date">
+            <de><![CDATA[Versanddatum]]></de>
+            <en><![CDATA[Send date]]></en>
+        </locale>
+
+        <locale name="grid.header.subject">
+            <de><![CDATA[Betreff]]></de>
+            <en><![CDATA[Subject]]></en>
+        </locale>
+
+        <locale name="grid.header.from">
+            <de><![CDATA[Von]]></de>
+            <en><![CDATA[From]]></en>
+        </locale>
+
+        <locale name="grid.header.to">
+            <de><![CDATA[An]]></de>
+            <en><![CDATA[To]]></en>
+        </locale>
+
+        <locale name="grid.header.attachments">
+            <de><![CDATA[Anhänge]]></de>
+            <en><![CDATA[Attachments]]></en>
+        </locale>
+
+        <locale name="grid.header.archived">
+            <de><![CDATA[Archiviert]]></de>
+            <en><![CDATA[Archived]]></en>
+        </locale>
     </groups>
 </locales>
