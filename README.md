@@ -1,10 +1,10 @@
-E-Mail Postausgang
+QUIQQER Mail-Journal (E-mail Outbox)
 ========
+
+![](bin/images/Readme.png)
 
 The QUIQQER module `mail-journal` stores all system-sent e-mails in a searchable outbox.
 It is designed for auditing and traceability of outgoing mails (for example invoices, orders, and customer notifications).
-
-![](bin/images/Readme.png)
 
 Package name:
 
@@ -28,18 +28,6 @@ Installation
 Package name:
 
     quiqqer/mail-journal
-
-
-Technical Notes
----------------
-
-- Event hook: `mailerSend`
-- Event handler: `\QUI\MailJournal\EventHandler::onMailerSend`
-- Main tables:
-    - `mail_journal_outbox`
-    - `mail_journal_outbox_attachments`
-- IDs are UUID-based
-
 
 Contribute
 ----------
