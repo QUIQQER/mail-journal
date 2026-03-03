@@ -2,7 +2,9 @@
 
 namespace QUI\MailJournal;
 
+use PDO;
 use QUI;
+use QUI\Exception;
 use QUI\Utils\Grid;
 
 use function explode;
@@ -19,6 +21,7 @@ class OutboxSearch
     /**
      * @param array<string, mixed> $searchParams
      * @return array<string, mixed>
+     * @throws Exception
      */
     public static function searchForGrid(array $searchParams = []): array
     {
@@ -91,7 +94,7 @@ class OutboxSearch
         }
 
         $Stmt->execute();
-        $rows = $Stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $rows = $Stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $sqlCount =
             'SELECT COUNT(*) ' .
@@ -128,7 +131,7 @@ class OutboxSearch
         $decoded = json_decode($json, true);
 
         if (!is_array($decoded)) {
-            return (string)$json;
+            return $json;
         }
 
         $addresses = [];

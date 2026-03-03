@@ -4,9 +4,12 @@ namespace QUI\MailJournal;
 
 use PHPMailer\PHPMailer\PHPMailer;
 use QUI;
+use QUI\Database\Exception;
 use QUI\Mail\Mailer;
 use QUI\Utils\Uuid;
 use QUI\Utils\System\File;
+
+use Throwable;
 
 use function basename;
 use function date;
@@ -19,6 +22,7 @@ class EventHandler
 {
     protected const TABLE_OUTBOX = 'mail_journal_outbox';
     protected const TABLE_ATTACHMENTS = 'mail_journal_outbox_attachments';
+    protected const LEGACY_MAILER_ATTACHMENTS_KEY = 'attachements';
 
     /**
      * Save each sent mail to the journal outbox.
@@ -33,11 +37,14 @@ class EventHandler
             }
 
             self::storeAttachments($mailId, $Mailer);
-        } catch (\Throwable $Throwable) {
+        } catch (Throwable $Throwable) {
             QUI\System\Log::writeException($Throwable, QUI\System\Log::LEVEL_ERROR, [], 'MailJournal');
         }
     }
 
+    /**
+     * @throws Exception
+     */
     protected static function insertMail(Mailer $Mailer, PHPMailer $PHPMailer): string
     {
         $mailId = Uuid::get();
@@ -66,39 +73,44 @@ class EventHandler
         return $mailId;
     }
 
+    /**
+     * @throws QUI\Exception
+     * @throws Exception
+     */
     protected static function storeAttachments(string $mailId, Mailer $Mailer): void
     {
         $mail = $Mailer->toArray();
+        $attachments = self::extractAttachments($mail);
 
-        if (empty($mail['attachements']) || !is_array($mail['attachements'])) {
+        if (empty($attachments)) {
             return;
         }
 
         $attachmentDir = QUI::getPackage('quiqqer/mail-journal')->getVarDir() . 'attachments/' . $mailId . '/';
         File::mkdir($attachmentDir);
 
-        foreach ($mail['attachements'] as $attachmentPath) {
+        foreach ($attachments as $attachmentPath) {
             $newPath = null;
-            $filename = basename((string)$attachmentPath);
+            $filename = basename($attachmentPath);
             $fileSize = null;
             $mimeType = null;
 
-            if (file_exists((string)$attachmentPath)) {
+            if (file_exists($attachmentPath)) {
                 $newPath = $attachmentDir . $filename;
 
                 try {
-                    File::copy((string)$attachmentPath, $newPath);
-                } catch (\Throwable) {
+                    File::copy($attachmentPath, $newPath);
+                } catch (Throwable) {
                     $newPath = null;
                 }
 
-                $fileInfo = File::getInfo((string)$attachmentPath);
+                $fileInfo = File::getInfo($attachmentPath);
 
                 if (isset($fileInfo['mime_type'])) {
                     $mimeType = $fileInfo['mime_type'];
                 }
 
-                $fileSize = filesize((string)$attachmentPath) ?: null;
+                $fileSize = filesize($attachmentPath) ?: null;
             }
 
             QUI::getDataBase()->insert(
@@ -114,6 +126,27 @@ class EventHandler
                 ]
             );
         }
+    }
+
+    /**
+     * @param array<string, mixed> $mail
+     * @return array<int, string>
+     */
+    protected static function extractAttachments(array $mail): array
+    {
+        if (!empty($mail['attachments']) && is_array($mail['attachments'])) {
+            return $mail['attachments'];
+        }
+
+        if (
+            !empty($mail[self::LEGACY_MAILER_ATTACHMENTS_KEY]) &&
+            is_array($mail[self::LEGACY_MAILER_ATTACHMENTS_KEY])
+        ) {
+            // Core compatibility: Mailer::toArray currently returns "attachements".
+            return $mail[self::LEGACY_MAILER_ATTACHMENTS_KEY];
+        }
+
+        return [];
     }
 
     /**

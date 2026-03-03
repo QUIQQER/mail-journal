@@ -19,5 +19,5 @@ QUI::getAjax()->registerFunction(
         return $Mail->toArray();
     },
     ['mailId'],
-    'Permission::checkAdminUser'
+    ['Permission::checkAdminUser', 'quiqqer.mail-journal.view']
 );

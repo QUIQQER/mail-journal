@@ -104,7 +104,7 @@ class Mail
             'is_html' => $this->isHtml,
             'source_event' => $this->sourceEvent,
             'archived' => $this->archived,
-            'mail_from_display' => trim((string)$this->mailFromName . ' <' . (string)$this->mailFrom . '>', ' <>'),
+            'mail_from_display' => trim($this->mailFromName . ' <' . $this->mailFrom . '>', ' <>'),
             'mail_to_display' => self::formatAddressList($this->mailTo),
             'reply_to_display' => self::formatAddressList($this->replyTo),
             'mail_cc_display' => self::formatAddressList($this->mailCc),
@@ -135,7 +135,7 @@ class Mail
         $decoded = json_decode($json, true);
 
         if (!is_array($decoded)) {
-            return (string)$json;
+            return $json;
         }
 
         $addresses = [];
