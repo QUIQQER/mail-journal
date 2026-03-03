@@ -1,9 +1,11 @@
 define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
     'qui/controls/desktop/Panel',
     'controls/grid/Grid',
+    'utils/Panels',
+    'package/quiqqer/mail-journal/bin/javascript/backend/controls/Mail',
     'Ajax',
     'Locale'
-], function (QUIPanel, Grid, QUIAjax, QUILocale) {
+], function (QUIPanel, Grid, PanelUtils, MailPanel, QUIAjax, QUILocale) {
     'use strict';
 
     const lg = 'quiqqer/mail-journal';
@@ -17,7 +19,8 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
             '$onCreate',
             '$onInject',
             '$onResize',
-            '$gridRefresh'
+            '$gridRefresh',
+            '$onGridDblClick'
         ],
 
         initialize: function (options) {
@@ -82,8 +85,12 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
                 serverSort: true,
                 sortOn: 'send_date',
                 sortBy: 'DESC',
-                perPage: 20,
-                onrefresh: this.$gridRefresh
+                perPage: 20
+            });
+
+            this.$Grid.addEvents({
+                onRefresh: this.$gridRefresh,
+                onDblClick: this.$onGridDblClick
             });
 
             this.$gridRefresh();
@@ -119,6 +126,22 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
                     sortBy: grid.getAttribute('sortBy') || 'DESC'
                 })
             });
+        },
+
+        $onGridDblClick: function () {
+            const selected = this.$Grid ? this.$Grid.getSelectedData() : [];
+
+            if (!selected || !selected.length || !selected[0].id) {
+                return;
+            }
+
+            const row = selected[0];
+            const Panel = new MailPanel({
+                mailId: row.id,
+                '#id': 'mail-journal-mail-' + row.id
+            });
+
+            PanelUtils.openPanelInTasks(Panel);
         },
 
         $onResize: function () {

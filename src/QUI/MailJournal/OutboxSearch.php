@@ -10,7 +10,9 @@ use function implode;
 use function in_array;
 use function is_array;
 use function is_string;
+use function json_encode;
 use function json_decode;
+use function strlen;
 use function strtoupper;
 use function trim;
 
@@ -117,6 +119,85 @@ class OutboxSearch
         }
 
         return $Grid->parseResult($data, $total);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function getMailById(string $mailId): array
+    {
+        if (empty($mailId)) {
+            return [];
+        }
+
+        $tableOutbox = QUI::getDBTableName('mail_journal_outbox');
+        $tableAttachments = QUI::getDBTableName('mail_journal_outbox_attachments');
+
+        $Stmt = QUI::getPDO()->prepare(
+            'SELECT id, create_date, send_date, subject, body_html, body_text, mail_from, mail_from_name, mail_to, reply_to, mail_cc, mail_bcc, is_html, source_event, meta, archived ' .
+            'FROM `' . $tableOutbox . '` ' .
+            'WHERE id = :mailId LIMIT 1'
+        );
+
+        $Stmt->bindValue(':mailId', $mailId);
+        $Stmt->execute();
+
+        $mail = $Stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if (!$mail) {
+            return [];
+        }
+
+        $StmtAttachments = QUI::getPDO()->prepare(
+            'SELECT id, filename, mime_type, filesize, path ' .
+            'FROM `' . $tableAttachments . '` ' .
+            'WHERE mail_id = :mailId ' .
+            'ORDER BY create_date ASC'
+        );
+
+        $StmtAttachments->bindValue(':mailId', $mailId);
+        $StmtAttachments->execute();
+
+        $attachments = $StmtAttachments->fetchAll(\PDO::FETCH_ASSOC);
+
+        foreach ($attachments as $i => $attachment) {
+            $attachments[$i]['filesize'] = (int)($attachment['filesize'] ?? 0);
+        }
+
+        $meta = [];
+
+        if (!empty($mail['meta'])) {
+            $metaDecoded = json_decode((string)$mail['meta'], true);
+
+            if (is_array($metaDecoded)) {
+                $meta = $metaDecoded;
+            }
+        }
+
+        $mail['is_html'] = (int)$mail['is_html'];
+        $mail['archived'] = (int)$mail['archived'];
+        $mail['mail_from_display'] = trim((string)$mail['mail_from_name'] . ' <' . (string)$mail['mail_from'] . '>', ' <>');
+        $mail['mail_to_display'] = self::formatAddressList($mail['mail_to']);
+        $mail['reply_to_display'] = self::formatAddressList($mail['reply_to']);
+        $mail['mail_cc_display'] = self::formatAddressList($mail['mail_cc']);
+        $mail['mail_bcc_display'] = self::formatAddressList($mail['mail_bcc']);
+        $mail['attachments'] = $attachments;
+        $mail['attachment_count'] = count($attachments);
+        $mail['meta'] = $meta;
+
+        if (is_array($mail['meta']) && !empty($mail['meta'])) {
+            $jsonMeta = json_encode($mail['meta'], JSON_PRETTY_PRINT);
+
+            if (is_string($jsonMeta) && strlen($jsonMeta)) {
+                $mail['meta_json'] = $jsonMeta;
+            } else {
+                $mail['meta_json'] = '';
+            }
+        } else {
+            $mail['meta_json'] = '';
+        }
+
+        return $mail;
     }
 
     protected static function formatAddressList(?string $json): string

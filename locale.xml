@@ -50,5 +50,70 @@
             <de><![CDATA[Archiviert]]></de>
             <en><![CDATA[Archived]]></en>
         </locale>
+
+        <locale name="mail.panel.title">
+            <de><![CDATA[E-Mail]]></de>
+            <en><![CDATA[E-Mail]]></en>
+        </locale>
+
+        <locale name="mail.panel.error.no_mail_id">
+            <de><![CDATA[Keine Mail-ID übergeben.]]></de>
+            <en><![CDATA[No mail id provided.]]></en>
+        </locale>
+
+        <locale name="mail.panel.error.not_found">
+            <de><![CDATA[E-Mail nicht gefunden.]]></de>
+            <en><![CDATA[E-Mail not found.]]></en>
+        </locale>
+
+        <locale name="mail.field.send_date">
+            <de><![CDATA[Versanddatum]]></de>
+            <en><![CDATA[Send date]]></en>
+        </locale>
+
+        <locale name="mail.field.from">
+            <de><![CDATA[Von]]></de>
+            <en><![CDATA[From]]></en>
+        </locale>
+
+        <locale name="mail.field.to">
+            <de><![CDATA[An]]></de>
+            <en><![CDATA[To]]></en>
+        </locale>
+
+        <locale name="mail.field.reply_to">
+            <de><![CDATA[Antwort an]]></de>
+            <en><![CDATA[Reply-To]]></en>
+        </locale>
+
+        <locale name="mail.field.cc">
+            <de><![CDATA[CC]]></de>
+            <en><![CDATA[CC]]></en>
+        </locale>
+
+        <locale name="mail.field.bcc">
+            <de><![CDATA[BCC]]></de>
+            <en><![CDATA[BCC]]></en>
+        </locale>
+
+        <locale name="mail.field.subject">
+            <de><![CDATA[Betreff]]></de>
+            <en><![CDATA[Subject]]></en>
+        </locale>
+
+        <locale name="mail.field.attachments">
+            <de><![CDATA[Anhänge]]></de>
+            <en><![CDATA[Attachments]]></en>
+        </locale>
+
+        <locale name="mail.field.body_html">
+            <de><![CDATA[Inhalt (HTML)]]></de>
+            <en><![CDATA[Body (HTML)]]></en>
+        </locale>
+
+        <locale name="mail.field.body_text">
+            <de><![CDATA[Inhalt (Text)]]></de>
+            <en><![CDATA[Body (Text)]]></en>
+        </locale>
     </groups>
 </locales>
