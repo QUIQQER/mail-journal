@@ -146,6 +146,41 @@
             <en><![CDATA[Do you really want to delete the selected e-mails?]]></en>
         </locale>
 
+        <locale name="archive.button">
+            <de><![CDATA[Archive]]></de>
+            <en><![CDATA[Archives]]></en>
+        </locale>
+
+        <locale name="archive.window.title">
+            <de><![CDATA[Mail-Archive]]></de>
+            <en><![CDATA[Mail archives]]></en>
+        </locale>
+
+        <locale name="archive.empty">
+            <de><![CDATA[Keine Archive vorhanden.]]></de>
+            <en><![CDATA[No archives available.]]></en>
+        </locale>
+
+        <locale name="archive.col.file">
+            <de><![CDATA[Datei]]></de>
+            <en><![CDATA[File]]></en>
+        </locale>
+
+        <locale name="archive.col.size">
+            <de><![CDATA[Größe]]></de>
+            <en><![CDATA[Size]]></en>
+        </locale>
+
+        <locale name="archive.col.date">
+            <de><![CDATA[Geändert am]]></de>
+            <en><![CDATA[Modified at]]></en>
+        </locale>
+
+        <locale name="archive.download">
+            <de><![CDATA[Download]]></de>
+            <en><![CDATA[Download]]></en>
+        </locale>
+
         <locale name="cron.archive.title">
             <de><![CDATA[E-Mail-Journal archivieren]]></de>
             <en><![CDATA[Archive mail journal]]></en>

@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * Manual test helper cleanup for mail-journal archive cron.
  *
@@ -12,6 +10,8 @@ declare(strict_types=1);
  * Scope:
  * - does not touch production rows unless they use the same dedicated test prefix
  */
+
+declare(strict_types=1);
 
 if (PHP_SAPI !== 'cli') {
     echo "This script can only be executed via CLI.\n";

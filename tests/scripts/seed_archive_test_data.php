@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * Manual test helper for mail-journal archive cron.
  *
@@ -16,6 +14,8 @@ declare(strict_types=1);
  * - this script only creates rows with the dedicated test prefix
  * - use cleanup_archive_test_data.php to remove all created rows
  */
+
+declare(strict_types=1);
 
 if (PHP_SAPI !== 'cli') {
     echo "This script can only be executed via CLI.\n";

@@ -4,9 +4,10 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
     'controls/grid/Grid',
     'utils/Panels',
     'package/quiqqer/mail-journal/bin/javascript/backend/controls/Mail',
+    'DownloadManager',
     'Ajax',
     'Locale'
-], function (QUIPanel, QUIConfirm, Grid, PanelUtils, MailPanel, QUIAjax, QUILocale) {
+], function (QUIPanel, QUIConfirm, Grid, PanelUtils, MailPanel, DownloadManager, QUIAjax, QUILocale) {
     'use strict';
 
     const lg = 'quiqqer/mail-journal';
@@ -27,6 +28,7 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
             '$onSearchKeyUp',
             '$onSearchInput',
             '$onDeleteClick',
+            '$openArchiveWindow',
             '$openFilterDialog'
         ],
 
@@ -81,6 +83,14 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
                 }
             });
 
+            this.addButton({
+                name: 'archives',
+                text: QUILocale.get(lg, 'archive.button'),
+                textimage: 'fa fa-archive',
+                events: {
+                    onClick: this.$openArchiveWindow
+                }
+            });
             this.addButton({
                 name: 'filter',
                 text: QUILocale.get(lg, 'filter.button'),
@@ -343,6 +353,134 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
                         }, {
                             'package': 'quiqqer/mail-journal',
                             mailId: JSON.encode(mailIds)
+                        });
+                    }
+                }
+            }).open();
+        },
+
+        $openArchiveWindow: function () {
+            new QUIConfirm({
+                title: QUILocale.get(lg, 'archive.window.title'),
+                icon: 'fa fa-archive',
+                autoclose: false,
+                maxWidth: 760,
+                maxHeight: 520,
+                ok_button: false,
+                cancel_button: {
+                    text: QUILocale.get('quiqqer/core', 'close'),
+                    textimage: 'fa fa-close'
+                },
+                events: {
+                    onOpen: (Win) => {
+                        const Content = Win.getContent();
+                        Content.setStyles({
+                            padding: 15
+                        });
+                        Content.set('html', '');
+                        Win.Loader.show();
+
+                        QUIAjax.get('package_quiqqer_mail-journal_ajax_backend_listArchives', (archives) => {
+                            Win.Loader.hide();
+
+                            if (!archives || !archives.length) {
+                                new Element('div', {
+                                    text: QUILocale.get(lg, 'archive.empty'),
+                                    styles: {
+                                        color: '#6b7280'
+                                    }
+                                }).inject(Content);
+                                return;
+                            }
+
+                            const Table = new Element('table', {
+                                styles: {
+                                    width: '100%',
+                                    borderCollapse: 'collapse'
+                                }
+                            }).inject(Content);
+
+                            const Thead = new Element('thead').inject(Table);
+                            const HeadRow = new Element('tr').inject(Thead);
+
+                            [
+                                QUILocale.get(lg, 'archive.col.file'),
+                                QUILocale.get(lg, 'archive.col.size'),
+                                QUILocale.get(lg, 'archive.col.date'),
+                                ''
+                            ].forEach((title) => {
+                                new Element('th', {
+                                    text: title,
+                                    styles: {
+                                        textAlign: 'left',
+                                        borderBottom: '1px solid #d1d5db',
+                                        padding: '8px'
+                                    }
+                                }).inject(HeadRow);
+                            });
+
+                            const Tbody = new Element('tbody').inject(Table);
+
+                            archives.forEach((entry) => {
+                                const Row = new Element('tr').inject(Tbody);
+
+                                new Element('td', {
+                                    text: entry.file || '-',
+                                    styles: {
+                                        borderBottom: '1px solid #e5e7eb',
+                                        padding: '8px'
+                                    }
+                                }).inject(Row);
+
+                                new Element('td', {
+                                    text: (entry.size || 0) + ' B',
+                                    styles: {
+                                        borderBottom: '1px solid #e5e7eb',
+                                        padding: '8px'
+                                    }
+                                }).inject(Row);
+
+                                new Element('td', {
+                                    text: entry.mtime || '-',
+                                    styles: {
+                                        borderBottom: '1px solid #e5e7eb',
+                                        padding: '8px'
+                                    }
+                                }).inject(Row);
+
+                                const ActionCell = new Element('td', {
+                                    styles: {
+                                        borderBottom: '1px solid #e5e7eb',
+                                        padding: '8px',
+                                        textAlign: 'right'
+                                    }
+                                }).inject(Row);
+
+                                new Element('button', {
+                                    html: '<span class="fa fa-download" style="margin-right:6px;"></span>' +
+                                        QUILocale.get(lg, 'archive.download'),
+                                    'class': 'btn btn-primary',
+                                    events: {
+                                        click: () => {
+                                            const file = String(entry.file || '');
+
+                                            if (!file) {
+                                                return;
+                                            }
+
+                                            DownloadManager.download(
+                                                'package_quiqqer_mail-journal_ajax_backend_downloadArchive',
+                                                {
+                                                    'package': 'quiqqer/mail-journal',
+                                                    file: file
+                                                }
+                                            );
+                                        }
+                                    }
+                                }).inject(ActionCell);
+                            });
+                        }, {
+                            'package': 'quiqqer/mail-journal'
                         });
                     }
                 }
