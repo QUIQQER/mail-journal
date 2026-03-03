@@ -24,6 +24,7 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
             '$onGridDblClick',
             '$onFilterChange',
             '$onSearchKeyUp',
+            '$onSearchInput',
             '$openFilterDialog'
         ],
 
@@ -72,6 +73,7 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
                 },
                 events: {
                     keyup: this.$onSearchKeyUp,
+                    input: this.$onSearchInput,
                     search: this.$onSearchKeyUp
                 }
             });
@@ -206,7 +208,7 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
         },
 
         $onSearchKeyUp: function (event) {
-            if (event.key === 'enter') {
+            if (event && event.key === 'enter') {
                 this.$onFilterChange();
                 return;
             }
@@ -218,6 +220,23 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
             this.$SearchDelay = (() => {
                 this.$onFilterChange();
             }).delay(350);
+        },
+
+        $onSearchInput: function () {
+            if (!this.$SearchInput) {
+                return;
+            }
+
+            if (this.$SearchInput.value !== '') {
+                return;
+            }
+
+            if (this.$SearchDelay) {
+                clearTimeout(this.$SearchDelay);
+                this.$SearchDelay = null;
+            }
+
+            this.$onFilterChange();
         },
 
         $openFilterDialog: function () {
