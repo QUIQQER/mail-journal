@@ -2,9 +2,9 @@
 
 namespace QUI\MailJournal;
 
+use Doctrine\DBAL\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 use QUI;
-use QUI\Database\Exception;
 use QUI\Mail\Mailer;
 use QUI\Utils\Uuid;
 use QUI\Utils\System\File;
@@ -47,8 +47,9 @@ class EventHandler
     protected static function insertMail(Mailer $Mailer, PHPMailer $PHPMailer): string
     {
         $mailId = Uuid::get();
+        $Connection = QUI::getDataBaseConnection();
 
-        QUI::getDataBase()->insert(
+        $Connection->insert(
             QUI::getDBTableName(self::TABLE_OUTBOX),
             [
                 'id' => $mailId,
@@ -112,7 +113,7 @@ class EventHandler
                 $fileSize = filesize($attachmentPath) ?: null;
             }
 
-            QUI::getDataBase()->insert(
+            QUI::getDataBaseConnection()->insert(
                 QUI::getDBTableName(self::TABLE_ATTACHMENTS),
                 [
                     'id' => Uuid::get(),

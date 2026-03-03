@@ -2,9 +2,9 @@
 
 namespace QUI\MailJournal;
 
-use PDO;
+use Doctrine\DBAL\Exception;
 use QUI;
-use QUI\Exception;
+use QUI\Permissions\Permission;
 
 use function array_filter;
 use function array_map;
@@ -26,41 +26,52 @@ class MailRepository
             return null;
         }
 
+        $Connection = QUI::getDataBaseConnection();
         $tableOutbox = QUI::getDBTableName('mail_journal_outbox');
         $tableAttachments = QUI::getDBTableName('mail_journal_outbox_attachments');
 
-        $Stmt = QUI::getPDO()->prepare(
-            'SELECT id, create_date, send_date, subject, body_html, body_text, mail_from, mail_from_name, mail_to, reply_to, mail_cc, mail_bcc, is_html, source_event, meta, archived ' .
-            'FROM `' . $tableOutbox . '` ' .
-            'WHERE id = :mailId LIMIT 1'
-        );
-
-        $Stmt->bindValue(':mailId', $mailId);
-        $Stmt->execute();
-
-        $row = $Stmt->fetch(PDO::FETCH_ASSOC);
+        $row = $Connection->createQueryBuilder()
+            ->select(
+                'id',
+                'create_date',
+                'send_date',
+                'subject',
+                'body_html',
+                'body_text',
+                'mail_from',
+                'mail_from_name',
+                'mail_to',
+                'reply_to',
+                'mail_cc',
+                'mail_bcc',
+                'is_html',
+                'source_event',
+                'meta',
+                'archived'
+            )
+            ->from($tableOutbox)
+            ->where('id = :mailId')
+            ->setParameter('mailId', $mailId)
+            ->setMaxResults(1)
+            ->fetchAssociative();
 
         if (!$row) {
             return null;
         }
 
-        $StmtAttachments = QUI::getPDO()->prepare(
-            'SELECT id, filename, mime_type, filesize, path ' .
-            'FROM `' . $tableAttachments . '` ' .
-            'WHERE mail_id = :mailId ' .
-            'ORDER BY create_date ASC'
-        );
-
-        $StmtAttachments->bindValue(':mailId', $mailId);
-        $StmtAttachments->execute();
-
-        $attachments = $StmtAttachments->fetchAll(PDO::FETCH_ASSOC);
+        $attachments = $Connection->createQueryBuilder()
+            ->select('id', 'filename', 'mime_type', 'filesize', 'path')
+            ->from($tableAttachments)
+            ->where('mail_id = :mailId')
+            ->setParameter('mailId', $mailId)
+            ->orderBy('create_date', 'ASC')
+            ->fetchAllAssociative();
 
         return Mail::fromDatabaseRow($row, $attachments);
     }
 
     /**
-     * @throws Exception
+     * @throws Exception|QUI\Exception
      */
     public function deleteById(string $mailId): bool
     {
@@ -70,9 +81,12 @@ class MailRepository
     /**
      * @param array<int, mixed> $mailIds
      * @throws Exception
+     * @throws QUI\Exception
      */
     public function deleteByIds(array $mailIds): int
     {
+        $this->assertDeletePermission();
+
         $mailIds = $this->normalizeIds($mailIds);
 
         if (!count($mailIds)) {
@@ -89,10 +103,11 @@ class MailRepository
         }
 
         $inSql = implode(', ', $placeholders);
+        $Connection = QUI::getDataBaseConnection();
         $tableOutbox = QUI::getDBTableName('mail_journal_outbox');
         $tableAttachments = QUI::getDBTableName('mail_journal_outbox_attachments');
 
-        $StmtAttachments = QUI::getPDO()->prepare(
+        $StmtAttachments = $Connection->prepare(
             'DELETE FROM `' . $tableAttachments . '` WHERE mail_id IN (' . $inSql . ')'
         );
 
@@ -100,9 +115,9 @@ class MailRepository
             $StmtAttachments->bindValue($name, $value);
         }
 
-        $StmtAttachments->execute();
+        $StmtAttachments->executeStatement();
 
-        $StmtOutbox = QUI::getPDO()->prepare(
+        $StmtOutbox = $Connection->prepare(
             'DELETE FROM `' . $tableOutbox . '` WHERE id IN (' . $inSql . ')'
         );
 
@@ -110,9 +125,7 @@ class MailRepository
             $StmtOutbox->bindValue($name, $value);
         }
 
-        $StmtOutbox->execute();
-
-        return $StmtOutbox->rowCount();
+        return (int)$StmtOutbox->executeStatement();
     }
 
     /**
@@ -138,5 +151,13 @@ class MailRepository
         );
 
         return array_values(array_unique($mailIds));
+    }
+
+    /**
+     * @throws QUI\Exception
+     */
+    protected function assertDeletePermission(): void
+    {
+        Permission::checkPermission('quiqqer.mail-journal.delete');
     }
 }
