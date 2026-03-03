@@ -8,7 +8,6 @@ use QUI\Database\Exception;
 use QUI\Mail\Mailer;
 use QUI\Utils\Uuid;
 use QUI\Utils\System\File;
-
 use Throwable;
 
 use function basename;

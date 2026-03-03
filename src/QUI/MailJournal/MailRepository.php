@@ -4,7 +4,6 @@ namespace QUI\MailJournal;
 
 use PDO;
 use QUI;
-
 use QUI\Exception;
 
 use function array_filter;
