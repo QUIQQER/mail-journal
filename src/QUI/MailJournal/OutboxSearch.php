@@ -2,9 +2,8 @@
 
 namespace QUI\MailJournal;
 
-use PDO;
+use Doctrine\DBAL\Exception;
 use QUI;
-use QUI\Exception;
 use QUI\Utils\Grid;
 
 use function explode;
@@ -85,53 +84,70 @@ class OutboxSearch
             }
         }
 
-        $whereSql = '';
-
-        if (!empty($where)) {
-            $whereSql = ' WHERE ' . implode(' AND ', $where);
-        }
-
-        $limitSql = '';
+        $firstResult = null;
+        $maxResults = null;
 
         if (!empty($query['limit'])) {
             $limit = explode(',', $query['limit']);
             $start = (int)$limit[0];
             $max = (int)($limit[1] ?? 20);
-            $limitSql = ' LIMIT ' . $start . ', ' . $max;
+            $firstResult = $start;
+            $maxResults = $max;
         }
 
-        $sql =
-            'SELECT o.id, o.create_date, o.send_date, o.subject, o.mail_from, o.mail_from_name, o.mail_to, o.archived, ' .
-            'COUNT(a.id) as attachment_count ' .
-            'FROM `' . $tableOutbox . '` o ' .
-            'LEFT JOIN `' . $tableAttachments . '` a ON a.mail_id = o.id ' .
-            $whereSql .
-            ' GROUP BY o.id ' .
-            ' ORDER BY o.' . $sortOn . ' ' . $sortBy .
-            $limitSql;
+        $Connection = QUI::getDataBaseConnection();
+        $QueryBuilder = $Connection->createQueryBuilder();
 
-        $Stmt = QUI::getPDO()->prepare($sql);
+        $QueryBuilder
+            ->select(
+                'o.id',
+                'o.create_date',
+                'o.send_date',
+                'o.subject',
+                'o.mail_from',
+                'o.mail_from_name',
+                'o.mail_to',
+                'o.archived',
+                'COUNT(a.id) AS attachment_count'
+            )
+            ->from($tableOutbox, 'o')
+            ->leftJoin('o', $tableAttachments, 'a', 'a.mail_id = o.id')
+            ->groupBy('o.id')
+            ->orderBy('o.' . $sortOn, $sortBy);
+
+        foreach ($where as $wherePart) {
+            $QueryBuilder->andWhere($wherePart);
+        }
 
         foreach ($binds as $name => $value) {
-            $Stmt->bindValue(':' . $name, $value);
+            $QueryBuilder->setParameter($name, $value);
         }
 
-        $Stmt->execute();
-        $rows = $Stmt->fetchAll(PDO::FETCH_ASSOC);
+        if ($firstResult !== null) {
+            $QueryBuilder->setFirstResult($firstResult);
+        }
 
-        $sqlCount =
-            'SELECT COUNT(*) ' .
-            'FROM `' . $tableOutbox . '` o ' .
-            $whereSql;
+        if ($maxResults !== null) {
+            $QueryBuilder->setMaxResults($maxResults);
+        }
 
-        $StmtCount = QUI::getPDO()->prepare($sqlCount);
+        $rows = $QueryBuilder->fetchAllAssociative();
+
+        $CountQueryBuilder = $Connection->createQueryBuilder();
+
+        $CountQueryBuilder
+            ->select('COUNT(*)')
+            ->from($tableOutbox, 'o');
+
+        foreach ($where as $wherePart) {
+            $CountQueryBuilder->andWhere($wherePart);
+        }
 
         foreach ($binds as $name => $value) {
-            $StmtCount->bindValue(':' . $name, $value);
+            $CountQueryBuilder->setParameter($name, $value);
         }
 
-        $StmtCount->execute();
-        $total = (int)$StmtCount->fetchColumn();
+        $total = (int)$CountQueryBuilder->fetchOne();
 
         $data = [];
 

@@ -104,7 +104,7 @@ class Mail
             'is_html' => $this->isHtml,
             'source_event' => $this->sourceEvent,
             'archived' => $this->archived,
-            'mail_from_display' => trim($this->mailFromName . ' <' . $this->mailFrom . '>', ' <>'),
+            'mail_from_display' => self::formatFromAddress($this->mailFromName, $this->mailFrom),
             'mail_to_display' => self::formatAddressList($this->mailTo),
             'reply_to_display' => self::formatAddressList($this->replyTo),
             'mail_cc_display' => self::formatAddressList($this->mailCc),
@@ -124,6 +124,22 @@ class Mail
         }
 
         return $result;
+    }
+
+    protected static function formatFromAddress(?string $name, ?string $address): string
+    {
+        $name = trim((string)$name);
+        $address = trim((string)$address);
+
+        if ($name !== '' && $address !== '') {
+            return $name . ' <' . $address . '>';
+        }
+
+        if ($address !== '') {
+            return $address;
+        }
+
+        return $name;
     }
 
     protected static function formatAddressList(?string $json): string
