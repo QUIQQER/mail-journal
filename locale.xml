@@ -51,6 +51,86 @@
             <en><![CDATA[Archived]]></en>
         </locale>
 
+        <locale name="filter.search.placeholder">
+            <de><![CDATA[Suche (Betreff, Absender, Empfänger, Inhalt, Anhänge …)]]></de>
+            <en><![CDATA[Search (subject, sender, recipients, body, attachments …)]]></en>
+        </locale>
+
+        <locale name="filter.search.button">
+            <de><![CDATA[Suchen]]></de>
+            <en><![CDATA[Search]]></en>
+        </locale>
+
+        <locale name="filter.button">
+            <de><![CDATA[Filter]]></de>
+            <en><![CDATA[Filter]]></en>
+        </locale>
+
+        <locale name="filter.dialog.title">
+            <de><![CDATA[Filter einstellen]]></de>
+            <en><![CDATA[Set filters]]></en>
+        </locale>
+
+        <locale name="filter.dialog.apply">
+            <de><![CDATA[Übernehmen]]></de>
+            <en><![CDATA[Apply]]></en>
+        </locale>
+
+        <locale name="filter.dialog.reset">
+            <de><![CDATA[Zurücksetzen]]></de>
+            <en><![CDATA[Reset]]></en>
+        </locale>
+
+        <locale name="filter.date_from">
+            <de><![CDATA[Datum von]]></de>
+            <en><![CDATA[Date from]]></en>
+        </locale>
+
+        <locale name="filter.date_to">
+            <de><![CDATA[Datum bis]]></de>
+            <en><![CDATA[Date to]]></en>
+        </locale>
+
+        <locale name="filter.attachments.any">
+            <de><![CDATA[Anhänge: Alle]]></de>
+            <en><![CDATA[Attachments: All]]></en>
+        </locale>
+
+        <locale name="filter.attachments.label">
+            <de><![CDATA[Anhänge]]></de>
+            <en><![CDATA[Attachments]]></en>
+        </locale>
+
+        <locale name="filter.attachments.with">
+            <de><![CDATA[Anhänge: Mit]]></de>
+            <en><![CDATA[Attachments: With]]></en>
+        </locale>
+
+        <locale name="filter.attachments.without">
+            <de><![CDATA[Anhänge: Ohne]]></de>
+            <en><![CDATA[Attachments: Without]]></en>
+        </locale>
+
+        <locale name="filter.archived.any">
+            <de><![CDATA[Archiv: Alle]]></de>
+            <en><![CDATA[Archive: All]]></en>
+        </locale>
+
+        <locale name="filter.archived.label">
+            <de><![CDATA[Archiviert]]></de>
+            <en><![CDATA[Archived]]></en>
+        </locale>
+
+        <locale name="filter.archived.yes">
+            <de><![CDATA[Archiv: Ja]]></de>
+            <en><![CDATA[Archive: Yes]]></en>
+        </locale>
+
+        <locale name="filter.archived.no">
+            <de><![CDATA[Archiv: Nein]]></de>
+            <en><![CDATA[Archive: No]]></en>
+        </locale>
+
         <locale name="mail.panel.title">
             <de><![CDATA[E-Mail]]></de>
             <en><![CDATA[E-Mail]]></en>

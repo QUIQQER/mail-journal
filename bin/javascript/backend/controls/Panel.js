@@ -1,11 +1,12 @@
 define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
     'qui/controls/desktop/Panel',
+    'qui/controls/windows/Confirm',
     'controls/grid/Grid',
     'utils/Panels',
     'package/quiqqer/mail-journal/bin/javascript/backend/controls/Mail',
     'Ajax',
     'Locale'
-], function (QUIPanel, Grid, PanelUtils, MailPanel, QUIAjax, QUILocale) {
+], function (QUIPanel, QUIConfirm, Grid, PanelUtils, MailPanel, QUIAjax, QUILocale) {
     'use strict';
 
     const lg = 'quiqqer/mail-journal';
@@ -20,7 +21,10 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
             '$onInject',
             '$onResize',
             '$gridRefresh',
-            '$onGridDblClick'
+            '$onGridDblClick',
+            '$onFilterChange',
+            '$onSearchKeyUp',
+            '$openFilterDialog'
         ],
 
         initialize: function (options) {
@@ -32,7 +36,16 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
             this.parent(options);
 
             this.$Container = null;
+            this.$GridContainer = null;
             this.$Grid = null;
+            this.$SearchInput = null;
+            this.$SearchDelay = null;
+            this.$FilterValues = {
+                dateFrom: '',
+                dateTo: '',
+                hasAttachments: '',
+                archived: ''
+            };
 
             this.addEvents({
                 onCreate: this.$onCreate,
@@ -49,7 +62,57 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
                 }
             }).inject(this.getBody());
 
-            this.$Grid = new Grid(this.$Container, {
+            this.$SearchInput = new Element('input', {
+                type: 'search',
+                placeholder: QUILocale.get(lg, 'filter.search.placeholder'),
+                styles: {
+                    'float': 'right',
+                    margin: '10px 0 0 0',
+                    width: 260
+                },
+                events: {
+                    keyup: this.$onSearchKeyUp,
+                    search: this.$onSearchKeyUp
+                }
+            });
+
+            this.addButton({
+                name: 'filter',
+                text: QUILocale.get(lg, 'filter.button'),
+                textimage: 'fa fa-sliders',
+                styles: {
+                    'float': 'right'
+                },
+                events: {
+                    onClick: this.$openFilterDialog
+                }
+            });
+            this.addButton({
+                type: 'separator',
+                styles: {
+                    'float': 'right'
+                }
+            });
+            this.addButton({
+                name: 'search',
+                icon: 'fa fa-search',
+                styles: {
+                    'float': 'right'
+                },
+                events: {
+                    onClick: this.$onFilterChange
+                }
+            });
+            this.addButton(this.$SearchInput);
+
+            this.$GridContainer = new Element('div', {
+                styles: {
+                    width: '100%',
+                    height: '100%'
+                }
+            }).inject(this.$Container);
+
+            this.$Grid = new Grid(this.$GridContainer, {
                 columnModel: [{
                     header: QUILocale.get(lg, 'grid.header.send_date'),
                     dataIndex: 'send_date',
@@ -123,9 +186,167 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
                     perPage: grid.getAttribute('perPage') || 20,
                     page: grid.getAttribute('page') || 1,
                     sortOn: grid.getAttribute('sortOn') || 'send_date',
-                    sortBy: grid.getAttribute('sortBy') || 'DESC'
+                    sortBy: grid.getAttribute('sortBy') || 'DESC',
+                    search: this.$SearchInput ? this.$SearchInput.value : '',
+                    dateFrom: this.$FilterValues.dateFrom,
+                    dateTo: this.$FilterValues.dateTo,
+                    hasAttachments: this.$FilterValues.hasAttachments,
+                    archived: this.$FilterValues.archived
                 })
             });
+        },
+
+        $onFilterChange: function () {
+            if (!this.$Grid) {
+                return;
+            }
+
+            this.$Grid.setAttribute('page', 1);
+            this.$gridRefresh();
+        },
+
+        $onSearchKeyUp: function (event) {
+            if (event.key === 'enter') {
+                this.$onFilterChange();
+                return;
+            }
+
+            if (this.$SearchDelay) {
+                clearTimeout(this.$SearchDelay);
+            }
+
+            this.$SearchDelay = (() => {
+                this.$onFilterChange();
+            }).delay(350);
+        },
+
+        $openFilterDialog: function () {
+            new QUIConfirm({
+                title: QUILocale.get(lg, 'filter.dialog.title'),
+                icon: 'fa fa-sliders',
+                autoclose: false,
+                maxWidth: 520,
+                maxHeight: 420,
+                ok_button: {
+                    text: QUILocale.get(lg, 'filter.dialog.apply'),
+                    textimage: 'fa fa-check'
+                },
+                events: {
+                    onOpen: (Win) => {
+                        const Content = Win.getContent();
+                        Content.setStyles({
+                            padding: 15
+                        });
+                        Content.set('html', '');
+
+                        const Row = (label, Control) => {
+                            const Wrap = new Element('div', {
+                                styles: {
+                                    marginBottom: 12
+                                }
+                            }).inject(Content);
+
+                            new Element('label', {
+                                text: label,
+                                styles: {
+                                    display: 'block',
+                                    marginBottom: 4,
+                                    fontWeight: 600
+                                }
+                            }).inject(Wrap);
+
+                            Control.setStyle('width', '100%');
+                            Control.inject(Wrap);
+                        };
+
+                        const DateFrom = new Element('input', {
+                            type: 'date',
+                            value: this.$FilterValues.dateFrom
+                        });
+
+                        const DateTo = new Element('input', {
+                            type: 'date',
+                            value: this.$FilterValues.dateTo
+                        });
+
+                        const HasAttachments = new Element('select');
+                        new Element('option', {
+                            value: '',
+                            text: QUILocale.get(lg, 'filter.attachments.any')
+                        }).inject(HasAttachments);
+                        new Element('option', {
+                            value: '1',
+                            text: QUILocale.get(lg, 'filter.attachments.with')
+                        }).inject(HasAttachments);
+                        new Element('option', {
+                            value: '0',
+                            text: QUILocale.get(lg, 'filter.attachments.without')
+                        }).inject(HasAttachments);
+                        HasAttachments.value = this.$FilterValues.hasAttachments;
+
+                        const Archived = new Element('select');
+                        new Element('option', {
+                            value: '',
+                            text: QUILocale.get(lg, 'filter.archived.any')
+                        }).inject(Archived);
+                        new Element('option', {
+                            value: '0',
+                            text: QUILocale.get(lg, 'filter.archived.no')
+                        }).inject(Archived);
+                        new Element('option', {
+                            value: '1',
+                            text: QUILocale.get(lg, 'filter.archived.yes')
+                        }).inject(Archived);
+                        Archived.value = this.$FilterValues.archived;
+
+                        Row(QUILocale.get(lg, 'filter.date_from'), DateFrom);
+                        Row(QUILocale.get(lg, 'filter.date_to'), DateTo);
+                        Row(QUILocale.get(lg, 'filter.attachments.label'), HasAttachments);
+                        Row(QUILocale.get(lg, 'filter.archived.label'), Archived);
+
+                        new Element('button', {
+                            'class': 'btn btn-secondary',
+                            text: QUILocale.get(lg, 'filter.dialog.reset'),
+                            styles: {
+                                marginTop: 4
+                            },
+                            events: {
+                                click: () => {
+                                    DateFrom.value = '';
+                                    DateTo.value = '';
+                                    HasAttachments.value = '';
+                                    Archived.value = '';
+                                }
+                            }
+                        }).inject(Content);
+
+                        Win.$FilterForm = {
+                            DateFrom: DateFrom,
+                            DateTo: DateTo,
+                            HasAttachments: HasAttachments,
+                            Archived: Archived
+                        };
+                    },
+                    onSubmit: (Win) => {
+                        const F = Win.$FilterForm;
+
+                        if (!F) {
+                            Win.close();
+                            return;
+                        }
+
+                        this.$FilterValues = {
+                            dateFrom: F.DateFrom.value || '',
+                            dateTo: F.DateTo.value || '',
+                            hasAttachments: F.HasAttachments.value || '',
+                            archived: F.Archived.value || ''
+                        };
+
+                        this.$onFilterChange();
+                        Win.close();
+                    }
+                }
+            }).open();
         },
 
         $onGridDblClick: function () {
@@ -145,7 +366,7 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
         },
 
         $onResize: function () {
-            if (!this.$Grid || !this.$Container) {
+            if (!this.$Grid || !this.$Container || !this.$GridContainer) {
                 return;
             }
 
@@ -162,6 +383,8 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
 
             this.$Container.setStyle('width', width);
             this.$Container.setStyle('height', height);
+            this.$GridContainer.setStyle('width', width);
+            this.$GridContainer.setStyle('height', height);
             this.$Grid.setWidth(width);
             this.$Grid.setHeight(height);
         }
