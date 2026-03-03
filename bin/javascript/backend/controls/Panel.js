@@ -21,10 +21,12 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
             '$onInject',
             '$onResize',
             '$gridRefresh',
+            '$refreshGridButtons',
             '$onGridDblClick',
             '$onFilterChange',
             '$onSearchKeyUp',
             '$onSearchInput',
+            '$onDeleteClick',
             '$openFilterDialog'
         ],
 
@@ -41,6 +43,7 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
             this.$Grid = null;
             this.$SearchInput = null;
             this.$SearchDelay = null;
+            this.$DeleteButton = null;
             this.$FilterValues = {
                 dateFrom: '',
                 dateTo: '',
@@ -146,15 +149,31 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
                     dataType: 'bool',
                     width: 80
                 }],
+                multipleSelection: true,
                 pagination: true,
                 serverSort: true,
                 sortOn: 'send_date',
                 sortBy: 'DESC',
-                perPage: 20
+                perPage: 20,
+                buttons: [{
+                    name: 'delete',
+                    text: '',
+                    icon: 'fa fa-trash',
+                    disabled: true,
+                    position: 'right',
+                    events: {
+                        onClick: this.$onDeleteClick
+                    }
+                }]
             });
+
+            this.$DeleteButton = this.$Grid.getButtons().filter((Button) => {
+                return Button.getAttribute('name') === 'delete';
+            })[0] || null;
 
             this.$Grid.addEvents({
                 onRefresh: this.$gridRefresh,
+                onClick: this.$refreshGridButtons,
                 onDblClick: this.$onGridDblClick
             });
 
@@ -181,6 +200,7 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
                 }
 
                 this.$Grid.setData(result);
+                this.$refreshGridButtons();
                 this.Loader.hide();
             }, {
                 'package': 'quiqqer/mail-journal',
@@ -196,6 +216,21 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
                     archived: this.$FilterValues.archived
                 })
             });
+        },
+
+        $refreshGridButtons: function () {
+            if (!this.$Grid || !this.$DeleteButton) {
+                return;
+            }
+
+            const selected = this.$Grid.getSelectedData();
+
+            if (!selected || !selected.length) {
+                this.$DeleteButton.disable();
+                return;
+            }
+
+            this.$DeleteButton.enable();
         },
 
         $onFilterChange: function () {
@@ -237,6 +272,81 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
             }
 
             this.$onFilterChange();
+        },
+
+        $onDeleteClick: function () {
+            if (!this.$Grid) {
+                return;
+            }
+
+            const selected = this.$Grid.getSelectedData();
+
+            if (!selected || !selected.length) {
+                return;
+            }
+
+            const mailIds = [];
+            const information = ['<ul style="margin:0;padding-left:18px;">'];
+
+            selected.forEach((entry) => {
+                const id = String(entry.id || '').trim();
+
+                if (!id) {
+                    return;
+                }
+
+                mailIds.push(id);
+
+                let subject = String(entry.subject || '').trim();
+
+                if (!subject) {
+                    subject = '-';
+                }
+
+                subject = subject
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+
+                information.push('<li><strong>' + id + '</strong>: ' + subject + '</li>');
+            });
+
+            information.push('</ul>');
+
+            if (!mailIds.length) {
+                return;
+            }
+
+            new QUIConfirm({
+                icon: 'fa fa-trash',
+                texticon: 'fa fa-trash',
+                title: QUILocale.get(lg, 'delete.dialog.title'),
+                text: QUILocale.get(lg, 'delete.dialog.text'),
+                information: information.join(''),
+                autoclose: false,
+                maxWidth: 650,
+                maxHeight: 500,
+                ok_button: {
+                    text: QUILocale.get(lg, 'delete.button'),
+                    textimage: 'fa fa-trash'
+                },
+                events: {
+                    onSubmit: (Win) => {
+                        Win.Loader.show();
+
+                        QUIAjax.get('package_quiqqer_mail-journal_ajax_backend_delete', () => {
+                            Win.close();
+                            this.$onFilterChange();
+                            this.$refreshGridButtons();
+                        }, {
+                            'package': 'quiqqer/mail-journal',
+                            mailId: JSON.encode(mailIds)
+                        });
+                    }
+                }
+            }).open();
         },
 
         $openFilterDialog: function () {

@@ -131,6 +131,21 @@
             <en><![CDATA[Archive: No]]></en>
         </locale>
 
+        <locale name="delete.button">
+            <de><![CDATA[Löschen]]></de>
+            <en><![CDATA[Delete]]></en>
+        </locale>
+
+        <locale name="delete.dialog.title">
+            <de><![CDATA[E-Mails löschen]]></de>
+            <en><![CDATA[Delete e-mails]]></en>
+        </locale>
+
+        <locale name="delete.dialog.text">
+            <de><![CDATA[Sollen die ausgewählten E-Mails wirklich gelöscht werden?]]></de>
+            <en><![CDATA[Do you really want to delete the selected e-mails?]]></en>
+        </locale>
+
         <locale name="mail.panel.title">
             <de><![CDATA[E-Mail]]></de>
             <en><![CDATA[E-Mail]]></en>

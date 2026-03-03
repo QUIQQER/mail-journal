@@ -4,6 +4,7 @@ namespace QUI\MailJournal;
 
 use Doctrine\DBAL\Exception;
 use QUI;
+use QUI\Permissions\Permission;
 
 use function array_filter;
 use function array_map;
@@ -80,9 +81,12 @@ class MailRepository
     /**
      * @param array<int, mixed> $mailIds
      * @throws Exception
+     * @throws \QUI\Exception
      */
     public function deleteByIds(array $mailIds): int
     {
+        $this->assertDeletePermission();
+
         $mailIds = $this->normalizeIds($mailIds);
 
         if (!count($mailIds)) {
@@ -147,5 +151,13 @@ class MailRepository
         );
 
         return array_values(array_unique($mailIds));
+    }
+
+    /**
+     * @throws \QUI\Exception
+     */
+    protected function assertDeletePermission(): void
+    {
+        Permission::checkPermission('quiqqer.mail-journal.delete');
     }
 }

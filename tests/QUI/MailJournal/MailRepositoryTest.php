@@ -37,7 +37,11 @@ class MailRepositoryTest extends TestCase
 
     public function testDeleteByIdsReturnsZeroForOnlyInvalidIds(): void
     {
-        $Repository = new MailRepository();
+        $Repository = new class () extends MailRepository {
+            protected function assertDeletePermission(): void
+            {
+            }
+        };
 
         $result = $Repository->deleteByIds(['', '   ', null, 123]);
 
