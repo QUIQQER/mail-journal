@@ -8,13 +8,12 @@ use function is_array;
 use function is_string;
 use function json_decode;
 use function json_encode;
-use function strlen;
 use function trim;
 
 class Mail
 {
     /**
-     * @param array<string, mixed> $attachments
+     * @param array<int, array<string, mixed>> $attachments
      * @param array<string, mixed> $meta
      */
     public function __construct(
@@ -119,7 +118,7 @@ class Mail
         if (!empty($this->meta)) {
             $jsonMeta = json_encode($this->meta, JSON_PRETTY_PRINT);
 
-            if (is_string($jsonMeta) && strlen($jsonMeta)) {
+            if ($jsonMeta !== false) {
                 $result['meta_json'] = $jsonMeta;
             }
         }
