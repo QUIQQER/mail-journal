@@ -71,7 +71,7 @@ class MailRepository
     }
 
     /**
-     * @throws Exception
+     * @throws Exception|QUI\Exception
      */
     public function deleteById(string $mailId): bool
     {
@@ -81,7 +81,7 @@ class MailRepository
     /**
      * @param array<int, mixed> $mailIds
      * @throws Exception
-     * @throws \QUI\Exception
+     * @throws QUI\Exception
      */
     public function deleteByIds(array $mailIds): int
     {
@@ -154,7 +154,7 @@ class MailRepository
     }
 
     /**
-     * @throws \QUI\Exception
+     * @throws QUI\Exception
      */
     protected function assertDeletePermission(): void
     {

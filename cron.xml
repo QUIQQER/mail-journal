@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crons>
+    <cron exec="\QUI\MailJournal\Cron::archiveOldMails">
+        <title>
+            <locale group="quiqqer/mail-journal" var="cron.archive.title"/>
+        </title>
+        <description>
+            <locale group="quiqqer/mail-journal" var="cron.archive.description"/>
+        </description>
+        <autocreate>
+            <interval>0 3 1 * *</interval>
+            <active>1</active>
+        </autocreate>
+    </cron>
+</crons>

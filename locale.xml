@@ -146,6 +146,16 @@
             <en><![CDATA[Do you really want to delete the selected e-mails?]]></en>
         </locale>
 
+        <locale name="cron.archive.title">
+            <de><![CDATA[E-Mail-Journal archivieren]]></de>
+            <en><![CDATA[Archive mail journal]]></en>
+        </locale>
+
+        <locale name="cron.archive.description">
+            <de><![CDATA[Archiviert monatlich alle E-Mails, die älter als zwei Jahre sind, als SQL-Dateien im Paket-Var-Verzeichnis und entfernt sie danach aus der Datenbank.]]></de>
+            <en><![CDATA[Archives all e-mails older than two years into monthly SQL files in the package var directory and removes them from the database afterwards.]]></en>
+        </locale>
+
         <locale name="mail.panel.title">
             <de><![CDATA[E-Mail]]></de>
             <en><![CDATA[E-Mail]]></en>
