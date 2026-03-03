@@ -50,5 +50,150 @@
             <de><![CDATA[Archiviert]]></de>
             <en><![CDATA[Archived]]></en>
         </locale>
+
+        <locale name="filter.search.placeholder">
+            <de><![CDATA[Suche (Betreff, Absender, Empfänger, Inhalt, Anhänge …)]]></de>
+            <en><![CDATA[Search (subject, sender, recipients, body, attachments …)]]></en>
+        </locale>
+
+        <locale name="filter.search.button">
+            <de><![CDATA[Suchen]]></de>
+            <en><![CDATA[Search]]></en>
+        </locale>
+
+        <locale name="filter.button">
+            <de><![CDATA[Filter]]></de>
+            <en><![CDATA[Filter]]></en>
+        </locale>
+
+        <locale name="filter.dialog.title">
+            <de><![CDATA[Filter einstellen]]></de>
+            <en><![CDATA[Set filters]]></en>
+        </locale>
+
+        <locale name="filter.dialog.apply">
+            <de><![CDATA[Übernehmen]]></de>
+            <en><![CDATA[Apply]]></en>
+        </locale>
+
+        <locale name="filter.dialog.reset">
+            <de><![CDATA[Zurücksetzen]]></de>
+            <en><![CDATA[Reset]]></en>
+        </locale>
+
+        <locale name="filter.date_from">
+            <de><![CDATA[Datum von]]></de>
+            <en><![CDATA[Date from]]></en>
+        </locale>
+
+        <locale name="filter.date_to">
+            <de><![CDATA[Datum bis]]></de>
+            <en><![CDATA[Date to]]></en>
+        </locale>
+
+        <locale name="filter.attachments.any">
+            <de><![CDATA[Anhänge: Alle]]></de>
+            <en><![CDATA[Attachments: All]]></en>
+        </locale>
+
+        <locale name="filter.attachments.label">
+            <de><![CDATA[Anhänge]]></de>
+            <en><![CDATA[Attachments]]></en>
+        </locale>
+
+        <locale name="filter.attachments.with">
+            <de><![CDATA[Anhänge: Mit]]></de>
+            <en><![CDATA[Attachments: With]]></en>
+        </locale>
+
+        <locale name="filter.attachments.without">
+            <de><![CDATA[Anhänge: Ohne]]></de>
+            <en><![CDATA[Attachments: Without]]></en>
+        </locale>
+
+        <locale name="filter.archived.any">
+            <de><![CDATA[Archiv: Alle]]></de>
+            <en><![CDATA[Archive: All]]></en>
+        </locale>
+
+        <locale name="filter.archived.label">
+            <de><![CDATA[Archiviert]]></de>
+            <en><![CDATA[Archived]]></en>
+        </locale>
+
+        <locale name="filter.archived.yes">
+            <de><![CDATA[Archiv: Ja]]></de>
+            <en><![CDATA[Archive: Yes]]></en>
+        </locale>
+
+        <locale name="filter.archived.no">
+            <de><![CDATA[Archiv: Nein]]></de>
+            <en><![CDATA[Archive: No]]></en>
+        </locale>
+
+        <locale name="mail.panel.title">
+            <de><![CDATA[E-Mail]]></de>
+            <en><![CDATA[E-Mail]]></en>
+        </locale>
+
+        <locale name="mail.panel.error.no_mail_id">
+            <de><![CDATA[Keine Mail-ID übergeben.]]></de>
+            <en><![CDATA[No mail id provided.]]></en>
+        </locale>
+
+        <locale name="mail.panel.error.not_found">
+            <de><![CDATA[E-Mail nicht gefunden.]]></de>
+            <en><![CDATA[E-Mail not found.]]></en>
+        </locale>
+
+        <locale name="mail.field.send_date">
+            <de><![CDATA[Versanddatum]]></de>
+            <en><![CDATA[Send date]]></en>
+        </locale>
+
+        <locale name="mail.field.from">
+            <de><![CDATA[Von]]></de>
+            <en><![CDATA[From]]></en>
+        </locale>
+
+        <locale name="mail.field.to">
+            <de><![CDATA[An]]></de>
+            <en><![CDATA[To]]></en>
+        </locale>
+
+        <locale name="mail.field.reply_to">
+            <de><![CDATA[Antwort an]]></de>
+            <en><![CDATA[Reply-To]]></en>
+        </locale>
+
+        <locale name="mail.field.cc">
+            <de><![CDATA[CC]]></de>
+            <en><![CDATA[CC]]></en>
+        </locale>
+
+        <locale name="mail.field.bcc">
+            <de><![CDATA[BCC]]></de>
+            <en><![CDATA[BCC]]></en>
+        </locale>
+
+        <locale name="mail.field.subject">
+            <de><![CDATA[Betreff]]></de>
+            <en><![CDATA[Subject]]></en>
+        </locale>
+
+        <locale name="mail.field.attachments">
+            <de><![CDATA[Anhänge]]></de>
+            <en><![CDATA[Attachments]]></en>
+        </locale>
+
+        <locale name="mail.field.body_html">
+            <de><![CDATA[Inhalt (HTML)]]></de>
+            <en><![CDATA[Body (HTML)]]></en>
+        </locale>
+
+        <locale name="mail.field.body_text">
+            <de><![CDATA[Inhalt (Text)]]></de>
+            <en><![CDATA[Body (Text)]]></en>
+        </locale>
     </groups>
 </locales>

@@ -4,6 +4,7 @@
           name="mail-journal"
           icon="fa fa-envelope"
           require="package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel"
+          permission="quiqqer.mail-journal.view"
     >
         <locale group="quiqqer/mail-journal" var="menu.title"/>
     </item>

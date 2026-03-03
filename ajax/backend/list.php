@@ -18,5 +18,5 @@ QUI::getAjax()->registerFunction(
         return OutboxSearch::searchForGrid($searchParams);
     },
     ['params'],
-    'Permission::checkAdminUser'
+    ['Permission::checkAdminUser', 'quiqqer.mail-journal.view']
 );
