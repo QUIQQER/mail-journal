@@ -26,7 +26,7 @@ QUI::getAjax()->registerFunction(
                 continue;
             }
 
-            if (!preg_match('/^mail-journal-\d{4}-\d{2}(?:-\d{14})?\.sql$/', $file)) {
+            if (!preg_match('/^mail-journal-\d{4}-\d{2}(?:-\d{14})?\.(?:sqlite|sql)$/', $file)) {
                 continue;
             }
 

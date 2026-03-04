@@ -13,7 +13,7 @@ QUI::getAjax()->registerFunction(
 
         $file = basename($file);
 
-        if (!preg_match('/^mail-journal-\d{4}-\d{2}(?:-\d{14})?\.sql$/', $file)) {
+        if (!preg_match('/^mail-journal-\d{4}-\d{2}(?:-\d{14})?\.(?:sqlite|sql)$/', $file)) {
             return;
         }
 
@@ -59,7 +59,10 @@ QUI::getAjax()->registerFunction(
         header('Expires: Thu, 19 Nov 1981 08:52:00 GMT');
         header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
         header('Pragma: no-cache');
-        header('Content-type: application/sql');
+        $extension = strtolower((string)pathinfo($downloadFile, PATHINFO_EXTENSION));
+        $contentType = $extension === 'sqlite' ? 'application/vnd.sqlite3' : 'application/sql';
+
+        header('Content-type: ' . $contentType);
         header('Content-Disposition: attachment; filename="' . $downloadFile . '"');
 
         readfile($path);
