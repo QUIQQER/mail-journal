@@ -24,7 +24,7 @@ QUI::getAjax()->registerFunction(
             return;
         }
 
-        QUI\Utils\System\File::downloadHeader($path, true, $file);
+        QUI\Utils\System\File::downloadHeader($path, false);
     },
     ['file'],
     ['Permission::checkAdminUser', 'quiqqer.mail-journal.archive']
