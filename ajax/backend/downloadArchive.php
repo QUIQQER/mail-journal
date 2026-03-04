@@ -24,7 +24,46 @@ QUI::getAjax()->registerFunction(
             return;
         }
 
-        QUI\Utils\System\File::downloadHeader($path, true, $file);
+        $downloadFile = $file;
+
+        if (str_starts_with($file, 'mail-journal-')) {
+            $host = (string)QUI::conf('globals', 'host');
+            $host = trim($host);
+
+            if ($host !== '') {
+                if (str_contains($host, '://')) {
+                    $parsedHost = parse_url($host, PHP_URL_HOST);
+
+                    if (is_string($parsedHost) && $parsedHost !== '') {
+                        $host = $parsedHost;
+                    }
+                }
+
+                if (str_contains($host, '/')) {
+                    $host = explode('/', $host)[0];
+                }
+
+                $host = preg_replace('/:\d+$/', '', $host) ?: '';
+                $host = preg_replace('/^www\./i', '', $host) ?: '';
+                $host = strtolower($host);
+                $host = str_replace('.', '-', $host);
+                $host = preg_replace('/[^a-z0-9.-]+/', '-', $host) ?: '';
+                $host = trim($host, '-.');
+
+                if ($host !== '') {
+                    $downloadFile = $host . '-' . $file;
+                }
+            }
+        }
+
+        header('Expires: Thu, 19 Nov 1981 08:52:00 GMT');
+        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        header('Pragma: no-cache');
+        header('Content-type: application/sql');
+        header('Content-Disposition: attachment; filename="' . $downloadFile . '"');
+
+        readfile($path);
+        exit;
     },
     ['file'],
     ['Permission::checkAdminUser', 'quiqqer.mail-journal.archive']
