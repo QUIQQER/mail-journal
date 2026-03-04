@@ -62,6 +62,7 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Mail', [
             const Body = this.getBody();
 
             Body.set('class', 'mail-journal-mailPanel-body');
+            Body.scrollTop = 0;
 
             if (!mailId) {
                 Body.set('text', QUILocale.get(lg, 'mail.panel.error.no_mail_id'));
@@ -71,9 +72,8 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Mail', [
             this.Loader.show();
 
             QUIAjax.get('package_quiqqer_mail-journal_ajax_backend_get', (mail) => {
-                this.Loader.hide();
-
                 if (!mail || !mail.id) {
+                    this.Loader.hide();
                     Body.set('text', QUILocale.get(lg, 'mail.panel.error.not_found'));
                     return;
                 }
@@ -146,10 +146,14 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Mail', [
                         'class': 'mail-journal-mailPanel-sectionTitle'
                     }).inject(HtmlWrap);
 
+                    const HtmlViewport = new Element('div', {
+                        'class': 'mail-journal-mailPanel-htmlViewport'
+                    }).inject(HtmlWrap);
+
                     new Element('div', {
                         html: mail.body_html,
-                        'class': 'mail-journal-mailPanel-html'
-                    }).inject(HtmlWrap);
+                        'class': 'mail-journal-mailPanel-htmlCanvas'
+                    }).inject(HtmlViewport);
                 }
 
                 if (mail.body_text) {
@@ -162,11 +166,30 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Mail', [
                         'class': 'mail-journal-mailPanel-sectionTitle'
                     }).inject(TextWrap);
 
+                    const TextViewport = new Element('div', {
+                        'class': 'mail-journal-mailPanel-textViewport'
+                    }).inject(TextWrap);
+
                     new Element('pre', {
                         text: mail.body_text,
                         'class': 'mail-journal-mailPanel-text'
-                    }).inject(TextWrap);
+                    }).inject(TextViewport);
                 }
+
+                Body.scrollTop = 0;
+
+                const showLayout = () => {
+                    Layout.addClass('mail-journal-mailPanel-layout--ready');
+                    Body.scrollTop = 0;
+                    this.Loader.hide();
+                };
+
+                if (window.requestAnimationFrame) {
+                    window.requestAnimationFrame(showLayout);
+                    return;
+                }
+
+                showLayout();
             }, {
                 'package': 'quiqqer/mail-journal',
                 mailId: mailId
