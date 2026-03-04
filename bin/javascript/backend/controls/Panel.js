@@ -459,7 +459,7 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
                                 new Element('button', {
                                     html: '<span class="fa fa-download" style="margin-right:6px;"></span>' +
                                         QUILocale.get(lg, 'archive.download'),
-                                    'class': 'btn btn-primary',
+                                    'class': 'btn btn-secondary',
                                     events: {
                                         click: () => {
                                             const file = String(entry.file || '');
