@@ -91,4 +91,25 @@ class OutboxSearchTest extends TestCase
 
         $this->assertSame('', $result);
     }
+
+    public function testResolveDeliveryTypeReturnsQueueForQueueMeta(): void
+    {
+        $method = new \ReflectionMethod(OutboxSearch::class, 'resolveDeliveryType');
+        $method->setAccessible(true);
+
+        $meta = '{"mailer":{"type":"queue","class":"QUI\\\\Mail\\\\Queue"}}';
+        $result = $method->invoke(null, $meta);
+
+        $this->assertSame('queue', $result);
+    }
+
+    public function testResolveDeliveryTypeDefaultsToDirect(): void
+    {
+        $method = new \ReflectionMethod(OutboxSearch::class, 'resolveDeliveryType');
+        $method->setAccessible(true);
+
+        $this->assertSame('direct', $method->invoke(null, null));
+        $this->assertSame('direct', $method->invoke(null, '{"mailer":{"subject":"Test"}}'));
+        $this->assertSame('direct', $method->invoke(null, 'not-json'));
+    }
 }

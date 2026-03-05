@@ -134,6 +134,23 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Panel', [
                     dataType: 'date',
                     width: 160
                 }, {
+                    header: QUILocale.get(lg, 'grid.header.delivery_type'),
+                    dataIndex: 'delivery_type',
+                    dataType: 'html',
+                    width: 70,
+                    sortable: false,
+                    export: false,
+                    labelFunction: (rowData) => {
+                        const type = String(rowData.delivery_type || 'direct').toLowerCase();
+                        const isQueue = type === 'queue';
+                        const iconClass = isQueue ? 'fa fa-clock-o' : 'fa fa-paper-plane-o';
+                        const title = isQueue
+                            ? QUILocale.get(lg, 'grid.delivery_type.queue')
+                            : QUILocale.get(lg, 'grid.delivery_type.direct');
+
+                        return '<span class="' + iconClass + '" title="' + title + '"></span>';
+                    }
+                }, {
                     header: QUILocale.get(lg, 'grid.header.subject'),
                     dataIndex: 'subject',
                     dataType: 'string',
