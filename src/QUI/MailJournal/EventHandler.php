@@ -6,6 +6,7 @@ use Doctrine\DBAL\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 use QUI;
 use QUI\Mail\Mailer;
+use QUI\Mail\Queue as MailerQueue;
 use QUI\Utils\Uuid;
 use QUI\Utils\System\File;
 use Throwable;
@@ -16,6 +17,7 @@ use function file_exists;
 use function filesize;
 use function is_array;
 use function json_encode;
+use function str_contains;
 
 class EventHandler
 {
@@ -26,8 +28,10 @@ class EventHandler
     /**
      * Save each sent mail to the journal outbox.
      */
-    public static function onMailerSend(Mailer $Mailer, PHPMailer $PHPMailer): void
-    {
+    public static function onMailerSend(
+        Mailer | MailerQueue $Mailer,
+        PHPMailer $PHPMailer
+    ): void {
         try {
             $mailId = self::insertMail($Mailer, $PHPMailer);
 
@@ -35,7 +39,7 @@ class EventHandler
                 return;
             }
 
-            self::storeAttachments($mailId, $Mailer);
+            self::storeAttachments($mailId, $PHPMailer);
         } catch (Throwable $Throwable) {
             QUI\System\Log::writeException($Throwable, QUI\System\Log::LEVEL_ERROR, [], 'MailJournal');
         }
@@ -44,7 +48,7 @@ class EventHandler
     /**
      * @throws Exception
      */
-    protected static function insertMail(Mailer $Mailer, PHPMailer $PHPMailer): string
+    protected static function insertMail(Mailer | MailerQueue $Mailer, PHPMailer $PHPMailer): string
     {
         $mailId = Uuid::get();
         $Connection = QUI::getDataBaseConnection();
@@ -64,7 +68,7 @@ class EventHandler
                 'reply_to' => self::encodeAddressList($PHPMailer->getReplyToAddresses()),
                 'mail_cc' => self::encodeAddressList($PHPMailer->getCcAddresses()),
                 'mail_bcc' => self::encodeAddressList($PHPMailer->getBccAddresses()),
-                'is_html' => (int)$Mailer->getAttribute('html'),
+                'is_html' => self::resolveIsHtml($Mailer, $PHPMailer),
                 'source_event' => null,
                 'meta' => self::encodeMeta($Mailer)
             ]
@@ -77,10 +81,9 @@ class EventHandler
      * @throws QUI\Exception
      * @throws Exception
      */
-    protected static function storeAttachments(string $mailId, Mailer $Mailer): void
+    protected static function storeAttachments(string $mailId, PHPMailer $PHPMailer): void
     {
-        $mail = $Mailer->toArray();
-        $attachments = self::extractAttachments($mail);
+        $attachments = $PHPMailer->getAttachments();
 
         if (empty($attachments)) {
             return;
@@ -89,11 +92,20 @@ class EventHandler
         $attachmentDir = QUI::getPackage('quiqqer/mail-journal')->getVarDir() . 'attachments/' . $mailId . '/';
         File::mkdir($attachmentDir);
 
-        foreach ($attachments as $attachmentPath) {
+        foreach ($attachments as $attachment) {
+            if (!isset($attachment[0]) || !is_string($attachment[0])) {
+                continue;
+            }
+
+            $attachmentPath = $attachment[0];
             $newPath = null;
             $filename = basename($attachmentPath);
             $fileSize = null;
             $mimeType = null;
+
+            if (isset($attachment[2]) && is_string($attachment[2]) && !empty($attachment[2])) {
+                $filename = $attachment[2];
+            }
 
             if (file_exists($attachmentPath)) {
                 $newPath = $attachmentDir . $filename;
@@ -157,10 +169,28 @@ class EventHandler
         return json_encode($addresses) ?: '[]';
     }
 
-    protected static function encodeMeta(Mailer $Mailer): string
+    protected static function encodeMeta(Mailer | MailerQueue $Mailer): string
     {
+        if ($Mailer instanceof MailerQueue) {
+            return json_encode([
+                'mailer' => [
+                    'type' => 'queue',
+                    'class' => MailerQueue::class
+                ]
+            ]) ?: '{}';
+        }
+
         return json_encode([
             'mailer' => $Mailer->toArray()
         ]) ?: '{}';
+    }
+
+    protected static function resolveIsHtml(Mailer | MailerQueue $Mailer, PHPMailer $PHPMailer): int
+    {
+        if ($Mailer instanceof Mailer) {
+            return (int)$Mailer->getAttribute('html');
+        }
+
+        return (int)str_contains((string)$PHPMailer->ContentType, 'text/html');
     }
 }

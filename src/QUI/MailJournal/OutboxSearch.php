@@ -107,6 +107,7 @@ class OutboxSearch
                 'o.mail_from',
                 'o.mail_from_name',
                 'o.mail_to',
+                'o.meta',
                 'o.archived',
                 'COUNT(a.id) AS attachment_count'
             )
@@ -155,6 +156,8 @@ class OutboxSearch
             $row['archived'] = (int)$row['archived'];
             $row['attachment_count'] = (int)$row['attachment_count'];
             $row['mail_to_display'] = self::formatAddressList($row['mail_to']);
+            $row['delivery_type'] = self::resolveDeliveryType($row['meta'] ?? null);
+            unset($row['meta']);
             $data[] = $row;
         }
 
@@ -261,5 +264,36 @@ class OutboxSearch
         }
 
         return implode(', ', $addresses);
+    }
+
+    protected static function resolveDeliveryType(?string $meta): string
+    {
+        if (empty($meta)) {
+            return 'direct';
+        }
+
+        $decoded = json_decode($meta, true);
+
+        if (!is_array($decoded)) {
+            return 'direct';
+        }
+
+        if (
+            isset($decoded['mailer']['type']) &&
+            is_string($decoded['mailer']['type']) &&
+            strtolower($decoded['mailer']['type']) === 'queue'
+        ) {
+            return 'queue';
+        }
+
+        if (
+            isset($decoded['mailer']['class']) &&
+            is_string($decoded['mailer']['class']) &&
+            $decoded['mailer']['class'] === 'QUI\\Mail\\Queue'
+        ) {
+            return 'queue';
+        }
+
+        return 'direct';
     }
 }

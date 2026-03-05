@@ -31,6 +31,11 @@
             <en><![CDATA[Subject]]></en>
         </locale>
 
+        <locale name="grid.header.delivery_type">
+            <de><![CDATA[Versand]]></de>
+            <en><![CDATA[Delivery]]></en>
+        </locale>
+
         <locale name="grid.header.from">
             <de><![CDATA[Von]]></de>
             <en><![CDATA[From]]></en>
@@ -49,6 +54,16 @@
         <locale name="grid.header.archived">
             <de><![CDATA[Archiviert]]></de>
             <en><![CDATA[Archived]]></en>
+        </locale>
+
+        <locale name="grid.delivery_type.direct">
+            <de><![CDATA[Direktversand]]></de>
+            <en><![CDATA[Direct send]]></en>
+        </locale>
+
+        <locale name="grid.delivery_type.queue">
+            <de><![CDATA[Queue-Versand]]></de>
+            <en><![CDATA[Queued send]]></en>
         </locale>
 
         <locale name="filter.search.placeholder">
