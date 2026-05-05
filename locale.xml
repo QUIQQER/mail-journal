@@ -11,6 +11,26 @@
             <en><![CDATA[Stores all system-sent emails in a searchable outbox including attachments, archiving, and event linkage.]]></en>
         </locale>
 
+        <locale name="permission.quiqqer.mail-journal._header">
+            <de><![CDATA[E-Mail Postausgang]]></de>
+            <en><![CDATA[E-Mail Outbox]]></en>
+        </locale>
+
+        <locale name="permission.quiqqer.mail-journal.view">
+            <de><![CDATA[Darf den E-Mail-Postausgang anzeigen.]]></de>
+            <en><![CDATA[Can view the e-mail outbox.]]></en>
+        </locale>
+
+        <locale name="permission.quiqqer.mail-journal.delete">
+            <de><![CDATA[Darf E-Mails aus dem E-Mail-Postausgang löschen.]]></de>
+            <en><![CDATA[Can delete e-mails from the e-mail outbox.]]></en>
+        </locale>
+
+        <locale name="permission.quiqqer.mail-journal.archive">
+            <de><![CDATA[Darf E-Mail-Archive anzeigen und herunterladen.]]></de>
+            <en><![CDATA[Can view and download e-mail archives.]]></en>
+        </locale>
+
         <locale name="menu.title">
             <de><![CDATA[E-Mail Postausgang]]></de>
             <en><![CDATA[E-Mail Outbox]]></en>
