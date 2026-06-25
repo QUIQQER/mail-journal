@@ -33,6 +33,10 @@ class EventHandler
         PHPMailer $PHPMailer
     ): void {
         try {
+            if (self::shouldSkipJournalEntry($Mailer)) {
+                return;
+            }
+
             $mailId = self::insertMail($Mailer, $PHPMailer);
 
             if (empty($mailId)) {
@@ -75,6 +79,21 @@ class EventHandler
         );
 
         return $mailId;
+    }
+
+    protected static function shouldSkipJournalEntry(
+        Mailer | MailerQueue $Mailer,
+        ?bool $mailQueueEnabled = null
+    ): bool {
+        if ($Mailer instanceof MailerQueue) {
+            return false;
+        }
+
+        if ($mailQueueEnabled === null) {
+            $mailQueueEnabled = (bool)QUI::conf('mail', 'queue');
+        }
+
+        return $mailQueueEnabled;
     }
 
     /**

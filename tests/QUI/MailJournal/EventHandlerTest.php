@@ -78,6 +78,29 @@ class EventHandlerTest extends TestCase
         $this->assertSame('Unit Test', $decoded['mailer']['subject']);
     }
 
+    public function testShouldSkipJournalEntryForMailerWhenQueueIsEnabled(): void
+    {
+        $Mailer = $this->getMockBuilder(Mailer::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $method = new \ReflectionMethod(EventHandler::class, 'shouldSkipJournalEntry');
+        $method->setAccessible(true);
+
+        $this->assertTrue($method->invoke(null, $Mailer, true));
+        $this->assertFalse($method->invoke(null, $Mailer, false));
+    }
+
+    public function testShouldNotSkipJournalEntryForQueueWhenQueueIsEnabled(): void
+    {
+        $Queue = new Queue();
+
+        $method = new \ReflectionMethod(EventHandler::class, 'shouldSkipJournalEntry');
+        $method->setAccessible(true);
+
+        $this->assertFalse($method->invoke(null, $Queue, true));
+    }
+
     public function testStoreAttachmentsReturnsEarlyIfMailerHasNoAttachments(): void
     {
         $method = new \ReflectionMethod(EventHandler::class, 'storeAttachments');
