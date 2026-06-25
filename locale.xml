@@ -281,6 +281,16 @@
             <en><![CDATA[Attachments]]></en>
         </locale>
 
+        <locale name="mail.attachment.download">
+            <de><![CDATA[Anhang herunterladen]]></de>
+            <en><![CDATA[Download attachment]]></en>
+        </locale>
+
+        <locale name="mail.attachment.view">
+            <de><![CDATA[Anhang anzeigen]]></de>
+            <en><![CDATA[View attachment]]></en>
+        </locale>
+
         <locale name="mail.field.body_html">
             <de><![CDATA[Inhalt (HTML)]]></de>
             <en><![CDATA[Body (HTML)]]></en>

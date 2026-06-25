@@ -74,6 +74,29 @@
     padding-left: 20px;
 }
 
+.mail-journal-mailPanel-attachment {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.mail-journal-mailPanel-attachmentText {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.mail-journal-mailPanel-attachmentActions {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 6px;
+}
+
+.mail-journal-mailPanel-attachmentButton {
+    min-width: 32px;
+}
+
 .mail-journal-mailPanel-htmlViewport {
     background: #f8fafc;
     border: 1px solid #d1d5db;

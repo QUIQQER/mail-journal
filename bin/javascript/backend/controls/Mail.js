@@ -1,9 +1,10 @@
 define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Mail', [
     'qui/controls/desktop/Panel',
     'Ajax',
+    'DownloadManager',
     'Locale',
     'css!package/quiqqer/mail-journal/bin/javascript/backend/controls/Mail.css'
-], function (QUIPanel, QUIAjax, QUILocale) {
+], function (QUIPanel, QUIAjax, DownloadManager, QUILocale) {
     'use strict';
 
     const lg = 'quiqqer/mail-journal';
@@ -130,9 +131,65 @@ define('package/quiqqer/mail-journal/bin/javascript/backend/controls/Mail', [
                     }).inject(AttachmentWrap);
 
                     mail.attachments.forEach((attachment) => {
-                        new Element('li', {
-                            text: attachment.filename + (attachment.mime_type ? ' (' + attachment.mime_type + ')' : '')
+                        const Item = new Element('li', {
+                            'class': 'mail-journal-mailPanel-attachment'
                         }).inject(List);
+
+                        new Element('span', {
+                            text: attachment.filename + (attachment.mime_type ? ' (' + attachment.mime_type + ')' : ''),
+                            'class': 'mail-journal-mailPanel-attachmentText'
+                        }).inject(Item);
+
+                        const Actions = new Element('span', {
+                            'class': 'mail-journal-mailPanel-attachmentActions'
+                        }).inject(Item);
+
+                        new Element('button', {
+                            html: '<span class="fa fa-eye"></span>',
+                            title: QUILocale.get(lg, 'mail.attachment.view'),
+                            'class': 'mail-journal-mailPanel-attachmentButton btn btn-secondary',
+                            events: {
+                                click: () => {
+                                    if (!attachment.id) {
+                                        return;
+                                    }
+
+                                    window.open(
+                                        QUIAjax.$url + '?' + QUIAjax.parseParams(
+                                            'package_quiqqer_mail-journal_ajax_backend_downloadAttachment',
+                                            {
+                                                'package': 'quiqqer/mail-journal',
+                                                attachmentId: attachment.id,
+                                                disposition: 'inline'
+                                            }
+                                        ),
+                                        '_blank'
+                                    );
+                                }
+                            }
+                        }).inject(Actions);
+
+                        new Element('button', {
+                            html: '<span class="fa fa-download"></span>',
+                            title: QUILocale.get(lg, 'mail.attachment.download'),
+                            'class': 'mail-journal-mailPanel-attachmentButton btn btn-secondary',
+                            events: {
+                                click: () => {
+                                    if (!attachment.id) {
+                                        return;
+                                    }
+
+                                    DownloadManager.download(
+                                        'package_quiqqer_mail-journal_ajax_backend_downloadAttachment',
+                                        {
+                                            'package': 'quiqqer/mail-journal',
+                                            attachmentId: attachment.id,
+                                            disposition: 'attachment'
+                                        }
+                                    );
+                                }
+                            }
+                        }).inject(Actions);
                     });
                 }
 
