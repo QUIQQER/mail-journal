@@ -13,6 +13,9 @@
 
 declare(strict_types=1);
 
+use Doctrine\DBAL\ArrayParameterType;
+use QUI\Utils\Doctrine as DoctrineUtils;
+
 if (PHP_SAPI !== 'cli') {
     echo "This script can only be executed via CLI.\n";
     exit(1);
@@ -42,8 +45,8 @@ if ($confirm !== 'y' && $confirm !== 'yes') {
 }
 
 $Connection = QUI::getDataBaseConnection();
-$tableOutbox = QUI::getDBTableName('mail_journal_outbox');
-$tableAttachments = QUI::getDBTableName('mail_journal_outbox_attachments');
+$tableOutbox = DoctrineUtils::quoteIdentifier(QUI::getDBTableName('mail_journal_outbox'));
+$tableAttachments = DoctrineUtils::quoteIdentifier(QUI::getDBTableName('mail_journal_outbox_attachments'));
 
 $prefix = 'mj-archive-test-';
 $ids = [
@@ -53,36 +56,17 @@ $ids = [
     $prefix . 'new'
 ];
 
-$placeholders = [];
-$binds = [];
+$deletedAttachments = $Connection->createQueryBuilder()
+    ->delete($tableAttachments)
+    ->where('mail_id IN (:mailIds)')
+    ->setParameter('mailIds', $ids, ArrayParameterType::STRING)
+    ->executeStatement();
 
-foreach ($ids as $i => $id) {
-    $placeholder = ':id' . $i;
-    $placeholders[] = $placeholder;
-    $binds[$placeholder] = $id;
-}
-
-$inSql = implode(', ', $placeholders);
-
-$stmtAttachments = $Connection->prepare(
-    'DELETE FROM `' . $tableAttachments . '` WHERE mail_id IN (' . $inSql . ')'
-);
-
-foreach ($binds as $name => $value) {
-    $stmtAttachments->bindValue($name, $value);
-}
-
-$deletedAttachments = $stmtAttachments->executeStatement();
-
-$stmtOutbox = $Connection->prepare(
-    'DELETE FROM `' . $tableOutbox . '` WHERE id IN (' . $inSql . ')'
-);
-
-foreach ($binds as $name => $value) {
-    $stmtOutbox->bindValue($name, $value);
-}
-
-$deletedOutbox = $stmtOutbox->executeStatement();
+$deletedOutbox = $Connection->createQueryBuilder()
+    ->delete($tableOutbox)
+    ->where('id IN (:mailIds)')
+    ->setParameter('mailIds', $ids, ArrayParameterType::STRING)
+    ->executeStatement();
 
 echo "Cleanup done.\n";
 echo "Deleted outbox rows: " . (int)$deletedOutbox . "\n";

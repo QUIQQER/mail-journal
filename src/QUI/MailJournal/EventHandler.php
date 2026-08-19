@@ -7,6 +7,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use QUI;
 use QUI\Mail\Mailer;
 use QUI\Mail\Queue as MailerQueue;
+use QUI\Utils\Doctrine as DoctrineUtils;
 use QUI\Utils\Uuid;
 use QUI\Utils\System\File;
 use Throwable;
@@ -58,7 +59,7 @@ class EventHandler
         $Connection = QUI::getDataBaseConnection();
 
         $Connection->insert(
-            QUI::getDBTableName(self::TABLE_OUTBOX),
+            DoctrineUtils::quoteIdentifier(QUI::getDBTableName(self::TABLE_OUTBOX)),
             [
                 'id' => $mailId,
                 'create_date' => date('Y-m-d H:i:s'),
@@ -145,7 +146,7 @@ class EventHandler
             }
 
             QUI::getDataBaseConnection()->insert(
-                QUI::getDBTableName(self::TABLE_ATTACHMENTS),
+                DoctrineUtils::quoteIdentifier(QUI::getDBTableName(self::TABLE_ATTACHMENTS)),
                 [
                     'id' => Uuid::get(),
                     'mail_id' => $mailId,

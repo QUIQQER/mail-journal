@@ -3,10 +3,12 @@
 namespace QUI\MailJournal;
 
 use DateTimeImmutable;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Exception;
 use PDO;
 use QUI;
 use QUI\Cron\Manager;
+use QUI\Utils\Doctrine as DoctrineUtils;
 use QUI\Utils\System\File;
 use RuntimeException;
 use Throwable;
@@ -16,8 +18,10 @@ use function count;
 use function date;
 use function extension_loaded;
 use function file_exists;
-use function implode;
 use function is_string;
+use function preg_match;
+use function substr;
+use function trim;
 
 class Cron
 {
@@ -37,22 +41,18 @@ class Cron
         $cutoffDate = self::getCutoffDate();
 
         try {
-            $months = $Connection->createQueryBuilder()
-                ->select("DATE_FORMAT(COALESCE(send_date, create_date), '%Y-%m') AS archive_month")
-                ->from($tableOutbox)
-                ->where('COALESCE(send_date, create_date) < :cutoffDate')
-                ->setParameter('cutoffDate', $cutoffDate)
-                ->groupBy('archive_month')
-                ->orderBy('archive_month', 'ASC')
-                ->fetchFirstColumn();
+            while (true) {
+                $archiveDate = $Connection->createQueryBuilder()
+                    ->select('MIN(COALESCE(send_date, create_date))')
+                    ->from(DoctrineUtils::quoteIdentifier($tableOutbox))
+                    ->where('COALESCE(send_date, create_date) < :cutoffDate')
+                    ->setParameter('cutoffDate', $cutoffDate)
+                    ->fetchOne();
 
-            if (empty($months)) {
-                return;
-            }
+                $month = self::extractArchiveMonth($archiveDate);
 
-            foreach ($months as $month) {
-                if (!is_string($month) || $month === '') {
-                    continue;
+                if ($month === null) {
+                    return;
                 }
 
                 self::archiveMonth($month, $tableOutbox, $tableAttachments);
@@ -98,7 +98,7 @@ class Cron
 
         $outboxRows = $Connection->createQueryBuilder()
             ->select(...$outboxColumns)
-            ->from($tableOutbox)
+            ->from(DoctrineUtils::quoteIdentifier($tableOutbox))
             ->where('COALESCE(send_date, create_date) >= :dateFrom')
             ->andWhere('COALESCE(send_date, create_date) < :dateTo')
             ->setParameter('dateFrom', $range['from'])
@@ -133,27 +133,13 @@ class Cron
             return [];
         }
 
-        $placeholders = [];
-        $binds = [];
-
-        foreach ($mailIds as $i => $mailId) {
-            $placeholder = ':id' . $i;
-            $placeholders[] = $placeholder;
-            $binds[$placeholder] = $mailId;
-        }
-
-        $inSql = implode(', ', $placeholders);
-        $Connection = QUI::getDataBaseConnection();
-        $Stmt = $Connection->prepare(
-            'SELECT id, mail_id, create_date, filename, mime_type, filesize, path ' .
-            'FROM `' . $tableAttachments . '` WHERE mail_id IN (' . $inSql . ') ORDER BY create_date ASC'
-        );
-
-        foreach ($binds as $name => $value) {
-            $Stmt->bindValue($name, $value);
-        }
-
-        return $Stmt->executeQuery()->fetchAllAssociative();
+        return QUI::getQueryBuilder()
+            ->select('id', 'mail_id', 'create_date', 'filename', 'mime_type', 'filesize', 'path')
+            ->from(DoctrineUtils::quoteIdentifier($tableAttachments))
+            ->where('mail_id IN (:mailIds)')
+            ->setParameter('mailIds', $mailIds, ArrayParameterType::STRING)
+            ->orderBy('create_date', 'ASC')
+            ->fetchAllAssociative();
     }
 
     /**
@@ -166,37 +152,19 @@ class Cron
             return;
         }
 
-        $placeholders = [];
-        $binds = [];
-
-        foreach ($mailIds as $i => $mailId) {
-            $placeholder = ':id' . $i;
-            $placeholders[] = $placeholder;
-            $binds[$placeholder] = $mailId;
-        }
-
-        $inSql = implode(', ', $placeholders);
         $Connection = QUI::getDataBaseConnection();
 
-        $StmtAttachments = $Connection->prepare(
-            'DELETE FROM `' . $tableAttachments . '` WHERE mail_id IN (' . $inSql . ')'
-        );
+        $Connection->createQueryBuilder()
+            ->delete(DoctrineUtils::quoteIdentifier($tableAttachments))
+            ->where('mail_id IN (:mailIds)')
+            ->setParameter('mailIds', $mailIds, ArrayParameterType::STRING)
+            ->executeStatement();
 
-        foreach ($binds as $name => $value) {
-            $StmtAttachments->bindValue($name, $value);
-        }
-
-        $StmtAttachments->executeStatement();
-
-        $StmtOutbox = $Connection->prepare(
-            'DELETE FROM `' . $tableOutbox . '` WHERE id IN (' . $inSql . ')'
-        );
-
-        foreach ($binds as $name => $value) {
-            $StmtOutbox->bindValue($name, $value);
-        }
-
-        $StmtOutbox->executeStatement();
+        $Connection->createQueryBuilder()
+            ->delete(DoctrineUtils::quoteIdentifier($tableOutbox))
+            ->where('id IN (:mailIds)')
+            ->setParameter('mailIds', $mailIds, ArrayParameterType::STRING)
+            ->executeStatement();
     }
 
     /**
@@ -220,6 +188,21 @@ class Cron
     {
         $Date = new DateTimeImmutable('first day of this month 00:00:00');
         return $Date->modify('-2 years')->format('Y-m-d H:i:s');
+    }
+
+    protected static function extractArchiveMonth(mixed $archiveDate): ?string
+    {
+        if (!is_string($archiveDate)) {
+            return null;
+        }
+
+        $archiveDate = trim($archiveDate);
+
+        if (preg_match('/^\d{4}-\d{2}-/', $archiveDate) !== 1) {
+            return null;
+        }
+
+        return substr($archiveDate, 0, 7);
     }
 
     /**

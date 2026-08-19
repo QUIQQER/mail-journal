@@ -4,6 +4,7 @@ namespace QUI\MailJournal;
 
 use Doctrine\DBAL\Exception;
 use QUI;
+use QUI\Utils\Doctrine as DoctrineUtils;
 use QUI\Utils\Grid;
 
 use function explode;
@@ -28,8 +29,10 @@ class OutboxSearch
     {
         $Grid = new Grid();
         $query = $Grid->parseDBParams($searchParams);
-        $tableOutbox = QUI::getDBTableName('mail_journal_outbox');
-        $tableAttachments = QUI::getDBTableName('mail_journal_outbox_attachments');
+        $tableOutbox = DoctrineUtils::quoteIdentifier(QUI::getDBTableName('mail_journal_outbox'));
+        $tableAttachments = DoctrineUtils::quoteIdentifier(
+            QUI::getDBTableName('mail_journal_outbox_attachments')
+        );
 
         $sortOn = 'send_date';
         $sortBy = 'DESC';
@@ -78,9 +81,9 @@ class OutboxSearch
 
         if (isset($searchParams['hasAttachments']) && $searchParams['hasAttachments'] !== '') {
             if (self::toBool($searchParams['hasAttachments'])) {
-                $where[] = 'EXISTS (SELECT 1 FROM `' . $tableAttachments . '` ax WHERE ax.mail_id = o.id)';
+                $where[] = 'EXISTS (SELECT 1 FROM ' . $tableAttachments . ' ax WHERE ax.mail_id = o.id)';
             } else {
-                $where[] = 'NOT EXISTS (SELECT 1 FROM `' . $tableAttachments . '` ax WHERE ax.mail_id = o.id)';
+                $where[] = 'NOT EXISTS (SELECT 1 FROM ' . $tableAttachments . ' ax WHERE ax.mail_id = o.id)';
             }
         }
 
@@ -114,7 +117,7 @@ class OutboxSearch
             ->from($tableOutbox, 'o')
             ->leftJoin('o', $tableAttachments, 'a', 'a.mail_id = o.id')
             ->groupBy('o.id')
-            ->orderBy('o.' . $sortOn, $sortBy);
+            ->orderBy('o.' . DoctrineUtils::quoteIdentifier($sortOn), $sortBy);
 
         foreach ($where as $wherePart) {
             $QueryBuilder->andWhere($wherePart);
@@ -205,7 +208,8 @@ class OutboxSearch
                 $likes[] = $field . ' LIKE :' . $bindName;
             }
 
-            $likes[] = 'EXISTS (SELECT 1 FROM `' . $tableAttachments . '` sa WHERE sa.mail_id = o.id AND sa.filename LIKE :' . $bindName . ')';
+            $likes[] = 'EXISTS (SELECT 1 FROM ' . $tableAttachments .
+                ' sa WHERE sa.mail_id = o.id AND sa.filename LIKE :' . $bindName . ')';
 
             $where[] = '(' . implode(' OR ', $likes) . ')';
             $binds[$bindName] = '%' . $term . '%';
