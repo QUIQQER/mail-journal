@@ -17,6 +17,8 @@
 
 declare(strict_types=1);
 
+use QUI\Utils\Doctrine as DoctrineUtils;
+
 if (PHP_SAPI !== 'cli') {
     echo "This script can only be executed via CLI.\n";
     exit(1);
@@ -46,8 +48,8 @@ if ($confirm !== 'y' && $confirm !== 'yes') {
 }
 
 $Connection = QUI::getDataBaseConnection();
-$tableOutbox = QUI::getDBTableName('mail_journal_outbox');
-$tableAttachments = QUI::getDBTableName('mail_journal_outbox_attachments');
+$tableOutbox = DoctrineUtils::quoteIdentifier(QUI::getDBTableName('mail_journal_outbox'));
+$tableAttachments = DoctrineUtils::quoteIdentifier(QUI::getDBTableName('mail_journal_outbox_attachments'));
 
 $now = new DateTimeImmutable();
 $monthStart = new DateTimeImmutable('first day of this month 00:00:00');
@@ -59,14 +61,16 @@ $boundaryDate = $cutoff->format('Y-m-d H:i:s');
 $newDate = $now->modify('-30 days')->format('Y-m-d H:i:s');
 
 $prefix = 'mj-archive-test-';
-$Connection->executeStatement(
-    'DELETE FROM `' . $tableAttachments . '` WHERE mail_id LIKE :prefix',
-    ['prefix' => $prefix . '%']
-);
-$Connection->executeStatement(
-    'DELETE FROM `' . $tableOutbox . '` WHERE id LIKE :prefix',
-    ['prefix' => $prefix . '%']
-);
+$Connection->createQueryBuilder()
+    ->delete($tableAttachments)
+    ->where('mail_id LIKE :prefix')
+    ->setParameter('prefix', $prefix . '%')
+    ->executeStatement();
+$Connection->createQueryBuilder()
+    ->delete($tableOutbox)
+    ->where('id LIKE :prefix')
+    ->setParameter('prefix', $prefix . '%')
+    ->executeStatement();
 
 $rows = [
     [
