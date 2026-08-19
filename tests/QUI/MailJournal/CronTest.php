@@ -21,6 +21,17 @@ class CronTest extends TestCase
         $this->assertSame('2023-12-01 00:00:00', $range['to']);
     }
 
+    public function testExtractArchiveMonthAcceptsDatabaseDateStrings(): void
+    {
+        $method = new \ReflectionMethod(Cron::class, 'extractArchiveMonth');
+        $method->setAccessible(true);
+
+        $this->assertSame('2023-11', $method->invoke(null, '2023-11-10 08:00:00'));
+        $this->assertSame('2023-11', $method->invoke(null, ' 2023-11-10T08:00:00+00:00 '));
+        $this->assertNull($method->invoke(null, 'not-a-date'));
+        $this->assertNull($method->invoke(null, false));
+    }
+
     public function testNormalizeArchiveValueKeepsStringsAndNull(): void
     {
         $method = new \ReflectionMethod(Cron::class, 'normalizeArchiveValue');

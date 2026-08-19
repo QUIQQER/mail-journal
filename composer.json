@@ -2,14 +2,14 @@
     "name": "quiqqer/mail-journal",
     "type": "quiqqer-module",
     "description": "Module for storing and managing all system-sent emails with search, event links, attachments, archiving, and permission control",
-    "license": "GPL-3.0+",
+    "license": "GPL-3.0-or-later",
     "authors": [],
     "support": {
         "email": "support@pcsg.de",
         "url": "https://www.pcsg.de"
     },
     "require": {
-        "php": "^8",
+        "php": "^8.2",
         "quiqqer/core": "^2"
     },
     "autoload": {

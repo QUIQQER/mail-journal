@@ -2,16 +2,17 @@
 
 namespace QUI\MailJournal;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Exception;
 use QUI;
 use QUI\Permissions\Permission;
+use QUI\Utils\Doctrine as DoctrineUtils;
 
 use function array_filter;
 use function array_map;
 use function array_unique;
 use function array_values;
 use function count;
-use function implode;
 use function is_string;
 use function trim;
 
@@ -27,8 +28,10 @@ class MailRepository
         }
 
         $Connection = QUI::getDataBaseConnection();
-        $tableOutbox = QUI::getDBTableName('mail_journal_outbox');
-        $tableAttachments = QUI::getDBTableName('mail_journal_outbox_attachments');
+        $tableOutbox = DoctrineUtils::quoteIdentifier(QUI::getDBTableName('mail_journal_outbox'));
+        $tableAttachments = DoctrineUtils::quoteIdentifier(
+            QUI::getDBTableName('mail_journal_outbox_attachments')
+        );
 
         $row = $Connection->createQueryBuilder()
             ->select(
@@ -93,39 +96,23 @@ class MailRepository
             return 0;
         }
 
-        $placeholders = [];
-        $binds = [];
-
-        foreach ($mailIds as $i => $mailId) {
-            $placeholder = ':id' . $i;
-            $placeholders[] = $placeholder;
-            $binds[$placeholder] = $mailId;
-        }
-
-        $inSql = implode(', ', $placeholders);
         $Connection = QUI::getDataBaseConnection();
-        $tableOutbox = QUI::getDBTableName('mail_journal_outbox');
-        $tableAttachments = QUI::getDBTableName('mail_journal_outbox_attachments');
-
-        $StmtAttachments = $Connection->prepare(
-            'DELETE FROM `' . $tableAttachments . '` WHERE mail_id IN (' . $inSql . ')'
+        $tableOutbox = DoctrineUtils::quoteIdentifier(QUI::getDBTableName('mail_journal_outbox'));
+        $tableAttachments = DoctrineUtils::quoteIdentifier(
+            QUI::getDBTableName('mail_journal_outbox_attachments')
         );
 
-        foreach ($binds as $name => $value) {
-            $StmtAttachments->bindValue($name, $value);
-        }
+        $Connection->createQueryBuilder()
+            ->delete($tableAttachments)
+            ->where('mail_id IN (:mailIds)')
+            ->setParameter('mailIds', $mailIds, ArrayParameterType::STRING)
+            ->executeStatement();
 
-        $StmtAttachments->executeStatement();
-
-        $StmtOutbox = $Connection->prepare(
-            'DELETE FROM `' . $tableOutbox . '` WHERE id IN (' . $inSql . ')'
-        );
-
-        foreach ($binds as $name => $value) {
-            $StmtOutbox->bindValue($name, $value);
-        }
-
-        return (int)$StmtOutbox->executeStatement();
+        return (int)$Connection->createQueryBuilder()
+            ->delete($tableOutbox)
+            ->where('id IN (:mailIds)')
+            ->setParameter('mailIds', $mailIds, ArrayParameterType::STRING)
+            ->executeStatement();
     }
 
     /**
