@@ -7,6 +7,15 @@
             <locale group="quiqqer/mail-journal" var="package.description"/>
         </description>
 
+        <capabilities schemaVersion="1">
+            <capability id="communication.outgoing-email-journal">
+                <title>Outgoing e-mail journal</title>
+                <description>
+                    Records, searches, and archives system-sent e-mails with sender and recipient data, message bodies, delivery metadata, and attachments.
+                </description>
+            </capability>
+        </capabilities>
+
         <support>
             <email><![CDATA[support@pcsg.de]]></email>
             <source><![CDATA[https://dev.quiqqer.com/quiqqer/mail-journal]]></source>
