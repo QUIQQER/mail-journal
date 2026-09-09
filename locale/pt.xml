@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<locales>
+    <groups name="quiqqer/mail-journal" datatype="php,js">
+        <locale name="package.title">
+<pt><![CDATA[Correio enviado]]></pt>
+        </locale>
+
+        <locale name="package.description">
+<pt><![CDATA[Guarda todos os e-mails enviados pelo sistema num registo pesquisável, incluindo anexos, arquivo e associação a eventos.]]></pt>
+        </locale>
+
+        <locale name="permission.quiqqer.mail-journal._header">
+<pt><![CDATA[Correio enviado]]></pt>
+        </locale>
+
+        <locale name="permission.quiqqer.mail-journal.view">
+<pt><![CDATA[Permite consultar o correio enviado.]]></pt>
+        </locale>
+
+        <locale name="permission.quiqqer.mail-journal.delete">
+<pt><![CDATA[Permite eliminar mensagens do correio enviado.]]></pt>
+        </locale>
+
+        <locale name="permission.quiqqer.mail-journal.archive">
+<pt><![CDATA[Permite consultar e descarregar arquivos de e-mail.]]></pt>
+        </locale>
+
+        <locale name="menu.title">
+<pt><![CDATA[Correio enviado]]></pt>
+        </locale>
+
+        <locale name="panel.title">
+<pt><![CDATA[Correio enviado]]></pt>
+        </locale>
+
+        <locale name="grid.header.send_date">
+<pt><![CDATA[Data de envio]]></pt>
+        </locale>
+
+        <locale name="grid.header.subject">
+<pt><![CDATA[Assunto]]></pt>
+        </locale>
+
+        <locale name="grid.header.delivery_type">
+<pt><![CDATA[Envio]]></pt>
+        </locale>
+
+        <locale name="grid.header.from">
+<pt><![CDATA[De]]></pt>
+        </locale>
+
+        <locale name="grid.header.to">
+<pt><![CDATA[Para]]></pt>
+        </locale>
+
+        <locale name="grid.header.attachments">
+<pt><![CDATA[Anexos]]></pt>
+        </locale>
+
+        <locale name="grid.header.archived">
+<pt><![CDATA[Arquivado]]></pt>
+        </locale>
+
+        <locale name="grid.delivery_type.direct">
+<pt><![CDATA[Envio direto]]></pt>
+        </locale>
+
+        <locale name="grid.delivery_type.queue">
+<pt><![CDATA[Envio através da fila]]></pt>
+        </locale>
+
+        <locale name="filter.search.placeholder">
+<pt><![CDATA[Pesquisar (assunto, remetente, destinatários, conteúdo, anexos…)]]></pt>
+        </locale>
+
+        <locale name="filter.search.button">
+<pt><![CDATA[Pesquisar]]></pt>
+        </locale>
+
+        <locale name="filter.button">
+<pt><![CDATA[Filtros]]></pt>
+        </locale>
+
+        <locale name="filter.dialog.title">
+<pt><![CDATA[Definir filtros]]></pt>
+        </locale>
+
+        <locale name="filter.dialog.apply">
+<pt><![CDATA[Aplicar]]></pt>
+        </locale>
+
+        <locale name="filter.dialog.reset">
+<pt><![CDATA[Repor]]></pt>
+        </locale>
+
+        <locale name="filter.date_from">
+<pt><![CDATA[Data inicial]]></pt>
+        </locale>
+
+        <locale name="filter.date_to">
+<pt><![CDATA[Data final]]></pt>
+        </locale>
+
+        <locale name="filter.attachments.any">
+<pt><![CDATA[Anexos: todas as mensagens]]></pt>
+        </locale>
+
+        <locale name="filter.attachments.label">
+<pt><![CDATA[Anexos]]></pt>
+        </locale>
+
+        <locale name="filter.attachments.with">
+<pt><![CDATA[Com anexos]]></pt>
+        </locale>
+
+        <locale name="filter.attachments.without">
+<pt><![CDATA[Sem anexos]]></pt>
+        </locale>
+
+        <locale name="filter.archived.any">
+<pt><![CDATA[Arquivo: todas as mensagens]]></pt>
+        </locale>
+
+        <locale name="filter.archived.label">
+<pt><![CDATA[Arquivado]]></pt>
+        </locale>
+
+        <locale name="filter.archived.yes">
+<pt><![CDATA[Arquivados]]></pt>
+        </locale>
+
+        <locale name="filter.archived.no">
+<pt><![CDATA[Não arquivados]]></pt>
+        </locale>
+
+        <locale name="delete.button">
+<pt><![CDATA[Eliminar]]></pt>
+        </locale>
+
+        <locale name="delete.dialog.title">
+<pt><![CDATA[Eliminar e-mails]]></pt>
+        </locale>
+
+        <locale name="delete.dialog.text">
+<pt><![CDATA[Tem a certeza de que pretende eliminar os e-mails selecionados?]]></pt>
+        </locale>
+
+        <locale name="archive.button">
+<pt><![CDATA[Arquivos]]></pt>
+        </locale>
+
+        <locale name="archive.window.title">
+<pt><![CDATA[Arquivos de e-mail]]></pt>
+        </locale>
+
+        <locale name="archive.empty">
+<pt><![CDATA[Não existem arquivos disponíveis.]]></pt>
+        </locale>
+
+        <locale name="archive.col.file">
+<pt><![CDATA[Ficheiro]]></pt>
+        </locale>
+
+        <locale name="archive.col.size">
+<pt><![CDATA[Tamanho]]></pt>
+        </locale>
+
+        <locale name="archive.col.date">
+<pt><![CDATA[Data de alteração]]></pt>
+        </locale>
+
+        <locale name="archive.download">
+<pt><![CDATA[Descarregar]]></pt>
+        </locale>
+
+        <locale name="cron.archive.title">
+<pt><![CDATA[Arquivar o registo de e-mails]]></pt>
+        </locale>
+
+        <locale name="cron.archive.description">
+<pt><![CDATA[Arquiva os e-mails com mais de dois anos em ficheiros SQLite agrupados por mês, no diretório var do pacote, e elimina-os depois da base de dados.]]></pt>
+        </locale>
+
+        <locale name="mail.panel.title">
+<pt><![CDATA[E-mail]]></pt>
+        </locale>
+
+        <locale name="mail.panel.error.no_mail_id">
+<pt><![CDATA[Não foi indicado o ID do e-mail.]]></pt>
+        </locale>
+
+        <locale name="mail.panel.error.not_found">
+<pt><![CDATA[E-mail não encontrado.]]></pt>
+        </locale>
+
+        <locale name="mail.field.send_date">
+<pt><![CDATA[Data de envio]]></pt>
+        </locale>
+
+        <locale name="mail.field.from">
+<pt><![CDATA[De]]></pt>
+        </locale>
+
+        <locale name="mail.field.to">
+<pt><![CDATA[Para]]></pt>
+        </locale>
+
+        <locale name="mail.field.reply_to">
+<pt><![CDATA[Responder a]]></pt>
+        </locale>
+
+        <locale name="mail.field.cc">
+<pt><![CDATA[CC]]></pt>
+        </locale>
+
+        <locale name="mail.field.bcc">
+<pt><![CDATA[BCC]]></pt>
+        </locale>
+
+        <locale name="mail.field.subject">
+<pt><![CDATA[Assunto]]></pt>
+        </locale>
+
+        <locale name="mail.field.attachments">
+<pt><![CDATA[Anexos]]></pt>
+        </locale>
+
+        <locale name="mail.attachment.download">
+<pt><![CDATA[Descarregar anexo]]></pt>
+        </locale>
+
+        <locale name="mail.attachment.view">
+<pt><![CDATA[Ver anexo]]></pt>
+        </locale>
+
+        <locale name="mail.field.body_html">
+<pt><![CDATA[Conteúdo (HTML)]]></pt>
+        </locale>
+
+        <locale name="mail.field.body_text">
+<pt><![CDATA[Conteúdo (texto)]]></pt>
+        </locale>
+    </groups>
+</locales>
