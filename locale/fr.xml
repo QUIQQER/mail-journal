@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<quiqqer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://www.quiqqer.com/docs/schemas/2.x/locale.xsd">
 <locales>
     <groups name="quiqqer/mail-journal" datatype="php,js">
+        <locale name="permission.quiqqer.mail-journal.mcp">
+<fr><![CDATA[Peut consulter les traces d’envoi, les e-mails et les pièces jointes via MCP (nécessite également le droit de consulter la boîte d’envoi).]]></fr>
+        </locale>
+
         <locale name="package.title">
 <fr><![CDATA[Courriers envoyés]]></fr>
         </locale>
@@ -242,3 +248,4 @@
         </locale>
     </groups>
 </locales>
+</quiqqer>

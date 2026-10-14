@@ -117,7 +117,8 @@ class OutboxSearch
             ->from($tableOutbox, 'o')
             ->leftJoin('o', $tableAttachments, 'a', 'a.mail_id = o.id')
             ->groupBy('o.id')
-            ->orderBy('o.' . DoctrineUtils::quoteIdentifier($sortOn), $sortBy);
+            ->orderBy('o.' . DoctrineUtils::quoteIdentifier($sortOn), $sortBy)
+            ->addOrderBy('o.id', $sortBy);
 
         foreach ($where as $wherePart) {
             $QueryBuilder->andWhere($wherePart);

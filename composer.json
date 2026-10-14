@@ -12,6 +12,9 @@
         "php": "^8.2",
         "quiqqer/core": "^2"
     },
+    "suggest": {
+        "quiqqer/ai-mcp": "Search outgoing e-mail records and retrieve mails and attachments through MCP"
+    },
     "autoload": {
         "psr-4": {
             "QUI\\MailJournal\\": "src/QUI/MailJournal"
